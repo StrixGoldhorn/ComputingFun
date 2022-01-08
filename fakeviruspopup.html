@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRITICAL ALERT</title>
+</head>
+<style>
+    html{
+        background-color: rgb(45, 52, 70);
+        font-family: "Lucida Console";
+        color: white;
+        font-size: 20px;
+        line-height: 150%;
+    }
+    #warn1{
+        margin-top: 5%;
+        text-align: center;
+    }
+    #detected{
+        margin-left: 10%;
+        float: left;
+    }
+    #sysinfo{
+        margin-right: 10%;
+        text-align: right;
+    }
+    #contactbar{
+        font-size: 50px;
+        padding-top: 5%;
+        text-align: center;
+        line-height: 50px
+    }
+</style>
+<body oncontextmenu="return false;">
+    <h1 id="warn1" style="color: red; font-size: 60px;">WARNING: Security NOT Compromised</h1>
+    <h2 style="text-align: center;">IMMEDIATE ACTION: IA IA IA SAFE TILT CHECK</h2>
+    <div id="detected">
+        Malware NOT Detected
+        <ul>
+            <li>MEMZ (Trojan Horse)</li>
+            <li>Shlayer (Virus)</li>
+            <li>Welchia (Virus)</li>
+            <li>Tinba (Virus)</li>
+            <li>Bundlore (Adware)</li>
+        </ul>
+    </div>
+    <div id="sysinfo">
+        <img id="oslogo" src="" width="100px", height="100px"><br/>
+        <p id="osname"></p>
+    </div>
+    <div id="contactbar">Refrain from contacting our technicians at +12 3456 7890<br/>to receive IMMEDIATE emotional SUPPORT</div>
+    <div id="devtool-status"></div>
+</body>
+<script>
+    function flash1(){
+        var eflash1 = document.getElementById("warn1");
+        eflash1.style.color = (eflash1.style.color == 'red' ? 'white' : 'red');
+    }
+    setInterval(flash1, 1000);
+
+    //get user's os, either windows or apple. defaults to apple
+    function usros(){if(window.navigator.platform === "Win32"){return "Windows";}else{return "Apple";}}
+
+    function oslogoload(){
+        //store svgs as b64 so no need to request from external sources, no risk of not getting them
+        const applelogo = "data:image/svg+xml;base64, PHN2ZyB3aWR0aD0iODQyIiBoZWlnaHQ9IjFlMyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNzAyIDk2MGMtNTQuMiA1Mi42LTExNCA0NC40LTE3MSAxOS42LTYwLjYtMjUuMy0xMTYtMjYuOS0xODAgMC03OS43IDM0LjQtMTIyIDI0LjQtMTcwLTE5LjYtMjcxLTI3OS0yMzEtNzA0IDc3LTcyMCA3NC43IDQgMTI3IDQxLjMgMTcxIDQ0LjQgNjUuNC0xMy4zIDEyOC01MS40IDE5OC00Ni40IDg0LjEgNi44IDE0NyA0MCAxODkgOTkuNy0xNzMgMTA0LTEzMiAzMzIgMjYuOSAzOTYtMzEuOCA4My41LTcyLjYgMTY2LTE0MSAyMjd6TTQyMyAyMzdDNDE0LjkgMTEzIDUxNS40IDExIDYzMSAxYzE1LjkgMTQzLTEzMCAyNTAtMjA4IDIzNnoiLz48L3N2Zz4=";
+        const winlogo = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+DTwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DTxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIGhlaWdodD0iODgiIHdpZHRoPSI4OCI+DTxwYXRoIHN0eWxlPSJmaWxsOiMwMGFkZWY7IiBkPSJtMCwxMi40MDIsMzUuNjg3LTQuODYwMiwwLjAxNTYsMzQuNDIzLTM1LjY3LDAuMjAzMTN6bTM1LjY3LDMzLjUyOSwwLjAyNzcsMzQuNDUzLTM1LjY3LTQuOTA0MS0wLjAwMi0yOS43OHptNC4zMjYxLTM5LjAyNSw0Ny4zMTgtNi45MDYsMCw0MS41MjctNDcuMzE4LDAuMzc1NjV6bTQ3LjMyOSwzOS4zNDktMC4wMTExLDQxLjM0LTQ3LjMxOC02LjY3ODQtMC4wNjYzLTM0LjczOXoiLz4NPC9zdmc+";
+        var elogo = document.getElementById("oslogo");
+        var ename = document.getElementById("osname");
+        const defstr = " has detected a <b>CRITICAL</b><br/>security error within your immune system.<br/>It has detected CORONA TIME";
+        if (usros() === "Windows"){elogo.src = winlogo;}else{elogo.src = applelogo;}
+        osname.innerHTML=usros()+defstr;
+    }
+    oslogoload();
+
+    document.addEventListener('click', (event) => {
+        compiledAnnoyance();
+        // console.log("user left click");
+        for(var i = 0; i<100; i++){
+            // thnx project gutenberg for free transcript
+            const speech = `A spectre is haunting Europe -- the spectre of Communism.
+                            All the Powers of old Europe have entered into a holy alliance to exorcise this spectre: Pope and Czar, Metternich and Guizot, French Radicals and German police-spies.
+
+                            Where is the party in opposition that has not been decried as Communistic by its opponents in power?
+                            Where is the Opposition that has not hurled back the branding reproach of Communism, against the more advanced opposition parties, as well as against its reactionary adversaries?
+
+                            Two things result from this fact.
+
+                            1.  Communism is already acknowledged by all European Powers to be itself a Power.
+
+                            2.  It is high time that Communists should openly, in the face of the whole world, publish their views, their aims, their tendencies, and meet this nursery tale of the Spectre of Communism with a Manifesto of the party itself.
+
+                            To this end, Communists of various nationalities have assembled in London, and sketched the following Manifesto, to be published in the English, French, German, Italian, Flemish and Danish languages.
+                            `;
+            speak(speech);
+        }
+    });
+
+    document.addEventListener('keydown', function(event){
+        compiledAnnoyance();
+        console.log(event.keyCode);
+        event.preventDefault();
+        startTheramin();
+        // console.log("user hit key");
+    });
+
+
+    function speak(phrase){
+        window.speechSynthesis.speak(new window.SpeechSynthesisUtterance(phrase));
+    }
+
+    function forceFullScreen(){
+        var elem = document.documentElement;
+        elem.requestFullscreen();
+    }
+    
+    function compiledAnnoyance(){
+        requestPointerLock();
+        forceFullScreen();
+        
+        scrnh = window.screen.height;
+        scrnw = window.screen.width;
+        var popupparams = "height="+scrnh+",width="+scrnw+",left=0,top=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,location=no,directories=no,status=yes";
+        window.open(window.location.href,"",params = popupparams);
+
+        speak(usros()+" is never gonna give you up, never gonna let you down, never gonna run around and desert you");
+    }
+
+    //compillation of ripped stuff from theannoyingsite. many thanks for making js very accessible on github https://github.com/feross/TheAnnoyingSite.com/blob/master/static/index.js
+    function requestPointerLock () {
+        const requestPointerLockApi = (
+            document.body.requestPointerLock ||
+            document.body.webkitRequestPointerLock ||
+            document.body.mozRequestPointerLock ||
+            document.body.msRequestPointerLock
+        )
+        requestPointerLockApi.call(document.body)
+    }
+
+    function startTheramin(){
+        const audioContext = new AudioContext()
+        const oscillatorNode = audioContext.createOscillator()
+        const gainNode = audioContext.createGain()
+        const pitchBase = 50
+
+        const wave = audioContext.createPeriodicWave(
+            Array(10).fill(0).map((v, i) => Math.cos(i)),
+            Array(10).fill(0).map((v, i) => Math.sin(i))
+        )
+
+        oscillatorNode.setPeriodicWave(wave)
+        oscillatorNode.connect(gainNode)
+        gainNode.connect(audioContext.destination)
+        oscillatorNode.start(0)
+
+        const oscillator = (volume) => {
+            gainNode.gain.value = volume * 0.5;
+        }
+    }
+
+    function blockBackButton () {
+        window.addEventListener('popstate', () => {
+            window.history.forward()
+        })
+    }
+    blockBackButton();
+</script>
+</html>
