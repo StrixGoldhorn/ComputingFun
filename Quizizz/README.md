@@ -8,6 +8,8 @@ In this brief writeup, we dive into how an endpoint can be exploited to earn mor
 
 Obligatory disclaimer: This is purely for research purposes, do not use for any malicious purposes, etc.
 
+<br/><br/><br/>
+
 # Table Of Contents
 
 - [Intro](#intro)
@@ -26,6 +28,7 @@ Obligatory disclaimer: This is purely for research purposes, do not use for any 
 	- [Proof of concept](#proof-of-concept)
 	- [Notes](#notes)
 
+<br/><br/><br/>
 
 # Functions in /play-api/
 
@@ -962,40 +965,40 @@ A portion of the JSON is shown below.
 
 ```json
 "response": {
-		"attempt": 0,
-		"questionId": "61f554fbc04a6f001d******",
-		"questionType": "MCQ",
-		"response": 3,
-		"responseType": "original",
-		"timeTaken": 47643,
-		"isEvaluated": false,
-		"state": "attempted",
-		"provisional": {
-			"scores": {
-				"correct": 600,
-				"incorrect": 0
-			},
-			"scoreBreakups": {
-				"correct": {
-					"base": 600,
-					"timer": 0,
-					"streak": 0,
-					"powerups": [],
-					"total": 600
-				},
-				"incorrect": {
-					"base": 0,
-					"timer": 0,
-					"streak": 0,
-					"powerups": [],
-					"total": 0
-				}
-			},
-			"teamAdjustments": {
-				"correct": 0,
-				"incorrect": 0
-			}
+"attempt": 0,
+"questionId": "61f554fbc04a6f001d******",
+"questionType": "MCQ",
+"response": 3,
+"responseType": "original",
+"timeTaken": 47643,
+"isEvaluated": false,
+"state": "attempted",
+"provisional": {
+	"scores": {
+		"correct": 600,
+		"incorrect": 0
+	},
+	"scoreBreakups": {
+		"correct": {
+			"base": 600,
+			"timer": 0,
+			"streak": 0,
+			"powerups": [],
+			"total": 600
+		},
+		"incorrect": {
+			"base": 0,
+			"timer": 0,
+			"streak": 0,
+			"powerups": [],
+			"total": 0
 		}
+	},
+	"teamAdjustments": {
+		"correct": 0,
+		"incorrect": 0
+	}
+}
 ```
 
 </td>
@@ -1003,40 +1006,40 @@ A portion of the JSON is shown below.
 
 ```json
 "response": {
-		"attempt": 0,
-		"questionId": "61f554fbc04a6f001d******",
-		"questionType": "MCQ",
-		"response": 3, // this can be edited
-		"responseType": "original",
-		"timeTaken": 1001, // decrease solve time
-		"isEvaluated": false,
-		"state": "attempted",
-		"provisional": {
-			"scores": {
-				"correct": 2200, // change your total score here
-				"incorrect": 0
-			},
-			"scoreBreakups": {
-				"correct": {
-					"base": 2000, // change score here too
-					"timer": 200, // usually adds bonus score if you solve fast
-					"streak": 0, // you can also add more score here
-					"powerups": [],
-					"total": 2200 // change your total score here (again)
-				},
-				"incorrect": {
-					"base": 0,
-					"timer": 0,
-					"streak": 0,
-					"powerups": [],
-					"total": 0
-				}
-			},
-			"teamAdjustments": {
-				"correct": 0,
-				"incorrect": 0
-			}
+"attempt": 0,
+"questionId": "61f554fbc04a6f001d******",
+"questionType": "MCQ",
+"response": 3, // this can be edited
+"responseType": "original",
+"timeTaken": 1001, // decrease solve time
+"isEvaluated": false,
+"state": "attempted",
+"provisional": {
+	"scores": {
+		"correct": 2200, // change your total score here
+		"incorrect": 0
+	},
+	"scoreBreakups": {
+		"correct": {
+			"base": 2000, // change score here too
+			"timer": 200, // usually adds bonus score if you solve fast
+			"streak": 0, // you can also add more score here
+			"powerups": [],
+			"total": 2200 // change your total score here (again)
+		},
+		"incorrect": {
+			"base": 0,
+			"timer": 0,
+			"streak": 0,
+			"powerups": [],
+			"total": 0
 		}
+	},
+	"teamAdjustments": {
+		"correct": 0,
+		"incorrect": 0
+	}
+}
 ```
 
 </td>
@@ -1053,6 +1056,9 @@ By editing the request, you are able to earn extra points.
 	- You can "bypass" this by letting it fail to reach the server first
 	- Edit the current intercepted request in BurpSuite, and copy it to clipboard
 	- Forward the stuck request, wait for the page to reload itself, then quickly paste and forward the request
+
+<br/>
+
 2. There is a server-sided limit on how many points you can earn from a question
 	- Don't be too greedy, or it will throw an error
 	- Server-side does **NOT** calculate any bonus, any amount of points in the timer or streak will work, regardless of the amount of time spent and/or the amount of correct answers
