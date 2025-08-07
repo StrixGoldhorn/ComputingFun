@@ -259,6 +259,7 @@ drawShipsOnMapBinary(t, e) {
 The interesting part of the code is here:
 
 ```js
+let M = t.getInt16(w), X = M & 49152, G;
 G = 1;
 
 w += 2,
@@ -296,7 +297,28 @@ An example of a ship "packet" is as such:
 44 40 22 1a 0f 5a 00 0b 86 80 03 b6 83 dd 01 05 45 4d 20 33 33
 ```
 
-The first 2 bytes are not important.
+The first 2 bytes are not very important, though it can be used to filter the vessel size, icon, display color, and whether it is used for SAR.
+
+The relevant code is below.
+
+```js
+let M = t.getInt16(w), L = (M & 240) >> 4, A = (M & 16128) >> 8, X = M & 49152, G;
+if (e > 6)
+switch (X) {
+case 49152:
+    G = 2;
+    break;
+case 32768:
+    G = 0;
+    break;
+default:
+    G = 1;
+    break
+}
+const V = (M & 2) !== 0
+```
+
+`G` will give the size, `A` the icon number, `L` the display color, `V` whether it is for SAR.
 
 <br/>
 
