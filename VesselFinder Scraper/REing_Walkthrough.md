@@ -1,5 +1,3 @@
-This is for the site [www.vesselfinder.com](https://www.vesselfinder.com/)
-
 # TOC
 - [TOC](#toc)
 - [Finding API calls](#finding-api-calls)
@@ -45,26 +43,13 @@ This returns a hex-encoded bunch of data. You can view it [here](./assets/mp2_ou
 By viewing the decoded text, we are able to gain a bit of information.
 
 ```
-C P    ŽvXD@"Z 
-†€¶ƒÝEM 33  
-   2à@ŽvX 
-’n¶šÇ
-/   ]
-SAN GIORGIOh‘äO † $    Wà@û)Ü 
-’¤¶¤ßHONG DA XIN 68 ¤   
-à@tëØ 
-”Ü¶³c	CSCL MARS ’ Ü    †`@OvE 
-•€¶¹¹
-ABHIMATA 2 
-   € à@!’ 
-…±¶³îKOTA SEMPENA ³ 1   9`ALhÛ 
-”û¶ºˆ
-ABHIMATA 1        € à@!Ì@ 
-ŠÏ¶®Ï	KOTA JAYA – +  	9 @!Ù¶ 
-šŒ¶¤8
-PSA AGILITY q    Xà@!’ŸÔ 
-Ú¶«6
-KOTA NEKAD  %  8
+C�P���ŽvXD@"Z�†€¶ƒÝEM 33��
+���2à@ŽvX�’n¶šÇ
+/���]SAN GIORGIOh‘äO�†�$���Wà@û)Ü�’¤¶¤ßHONG DA XIN 68�¤���à@tëØ�”Ü¶³c	CSCL MARS�’�Ü�� �†`@OvE�•€¶¹¹
+ABHIMATA 2�
+���€�à@!’�…±¶³îKOTA SEMPENA�³�1��9`ALhÛ�”û¶ºˆ
+ABHIMATA 1��������€�à@!Ì@�ŠÏ¶®Ï	KOTA JAYA�–�+��	9 @!Ù¶�šŒ¶¤8PSA AGILITY�q����Xà@!’ŸÔ�Ú¶«6
+KOTA NEKAD��%��8
 ```
 
 As you can see, some vessel names are included. Further tests at different areas of interests, zoom levels, filters, yield the same result.
@@ -260,6 +245,19 @@ The interesting part of the code is here:
 
 ```js
 let M = t.getInt16(w), X = M & 49152, G;
+if (e > 6)
+    switch (X) {
+    case 49152:
+        G = 2;
+        break;
+    case 32768:
+        G = 0;
+        break;
+    default:
+        G = 1;
+        break
+    }
+else
 G = 1;
 
 w += 2,
