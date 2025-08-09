@@ -4,7 +4,9 @@ GLOBAL_DB_DEBUG = False
 import innocent_container_ships_ports
 REDLAND_innocent_container_ships_ports_aoi_dict = innocent_container_ships_ports.REDLAND_innocent_container_ships_ports_aoi_dict
 BLUELAND_innocent_container_ships_ports_aoi_dict = innocent_container_ships_ports.BLUELAND_innocent_container_ships_ports_aoi_dict
+WHOLE_OF_BLUELAND_innocent_container_ships_ports_aoi_dict = innocent_container_ships_ports.WHOLE_OF_BLUELAND_innocent_container_ships_ports_aoi_dict
 GOLDLAND_TEST_aoi_dict = innocent_container_ships_ports.GOLDLAND_TEST_aoi_dict
+
 
 typefilter_blacklist = ["Tug", "Passenger Ship", "LNG Tanker", "Oil Products Tanker", "Pleasure craft", "Bulk Carrier",
                             "Ro-Ro Cargo Ship", "Port tender", "Chemical/Oil Products Tanker", "Bunkering Tanker", "Crude Oil Tanker",
@@ -204,7 +206,7 @@ def getShipInfoFromMMSI(mmsi: int) -> dict:
     
     return OUTPUT_DICT
 
-def getVesselData(mmsi: int) -> str:    
+def getVesselData(mmsi: int) -> dict:    
     vesseldata_url = f"https://www.vesselfinder.com/api/pub/click/{mmsi}"
     
     headers = {
@@ -215,6 +217,36 @@ def getVesselData(mmsi: int) -> str:
     vesseldata = json.loads((requests.request("GET", vesseldata_url, headers=headers)).text)
     
     return vesseldata
+
+def getVesselData_MMSIOfInterest(mmsi: int) -> tuple:
+    baseurl = "https://www.vesselfinder.com/api/pub/ml/"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+        # 'Cookie': 'ROUTEID=.1'
+        'Dnt': '1'
+    }
+    response = requests.request("GET", baseurl+str(mmsi), headers=headers)
+    
+    data = response.content
+    idx = 3
+    lat_length = 4
+    long_length = 4
+    
+    long_data = data[idx:idx+long_length]
+    long = int.from_bytes(long_data, "big") / 600000
+    idx += long_length
+    
+    lat_data = data[idx:idx+lat_length]
+    lat = int.from_bytes(lat_data, "big") / 600000
+    idx += lat_length
+    
+    ship_name_length = data[idx]
+    idx += 1
+    
+    ship_name = data[idx:idx+ship_name_length].decode("utf-8")
+    idx += ship_name_length
+    
+    return (lat, long, ship_name)
 
 
 
@@ -367,13 +399,15 @@ def insertDBShip(mmsi: int, name: str, country: str, ship_type: str):
         pass
 
 
-def checkDBExistsShipHistory(mmsi: int, name:str, unixtime: int) -> bool:
+def checkDBExistsShipHistory(mmsi: int, name:str, unixtime: int, lat: str, long: str) -> bool:
     db_filepath = getDBFilepath()
     
     try:
         conn = sqlite3.connect(db_filepath)
         curs = conn.cursor()
-        curs.execute("SELECT * FROM ship_history WHERE mmsi = ? AND name = ? AND timestamp = ?", (mmsi, name, unixtime))
+        curs.execute("SELECT * FROM ship_history\
+                     WHERE mmsi = ? AND name = ? AND timestamp = ? AND lat = ? AND long = ?",\
+                     (mmsi, name, unixtime, lat, long))
         exists = curs.fetchall()
         
         if exists: return True
@@ -385,7 +419,7 @@ def checkDBExistsShipHistory(mmsi: int, name:str, unixtime: int) -> bool:
 def insertDBShipHistory(mmsi: int, name:str, lat: str, long: str, unixtime: int):
     db_filepath = getDBFilepath()
     
-    if not checkDBExistsShipHistory(mmsi, name, unixtime):
+    if not checkDBExistsShipHistory(mmsi, name, unixtime, lat, long):
         try:
             conn = sqlite3.connect(db_filepath)
             curs = conn.cursor()
@@ -407,16 +441,98 @@ def insertDBShipHistory(mmsi: int, name:str, lat: str, long: str, unixtime: int)
         pass
 
 
+def checkDBExistsMMSIOfInterest(mmsi: int) -> bool:
+    db_filepath = getDBFilepath()
+    
+    try:
+        conn = sqlite3.connect(db_filepath)
+        curs = conn.cursor()
+        curs.execute("SELECT * FROM mmsi_of_interest WHERE mmsi = ?", (mmsi,))
+        exists = curs.fetchall()
+        
+        if exists: return True
+        else: return False
+        
+    except Exception as e:
+        print("Error:", e)
+
+def insertDBMMSIOfInterest(mmsi: int):
+    db_filepath = getDBFilepath()
+    
+    if not checkDBExistsMMSIOfInterest(mmsi):
+        try:
+            conn = sqlite3.connect(db_filepath)
+            curs = conn.cursor()
+
+            curs.execute("\
+                        INSERT INTO mmsi_of_interest (mmsi) \
+                        VALUES (?)\
+                ", (mmsi,))
+            
+            conn.commit()
+            if GLOBAL_DB_DEBUG:
+                print(f"MMSI of Intereest for ship {mmsi} successfully inserted")
+            
+        except Exception as e:
+            print("Error:", e)
+    else:
+        if GLOBAL_DB_DEBUG:
+            print(f"MMSI of Intereest for ship {mmsi} already exists!")
+        pass
+
+
+def updateDBShipHistory_ALL_MMSIOfInterest():
+    db_filepath = getDBFilepath()
+    
+    try:
+        conn = sqlite3.connect(db_filepath)
+        curs = conn.cursor()
+        curs.execute("SELECT mmsi FROM mmsi_of_interest")
+        exists = curs.fetchall()
+        
+        if exists:
+            for row in exists:
+                mmsi = row[0]
+                vesselLoc = getVesselData_MMSIOfInterest(mmsi)
+                vesselData = getVesselData(mmsi)
+                insertDBShipHistory(mmsi, vesselLoc[2], round(vesselLoc[0], 7), round(vesselLoc[1], 7), unixTimeToHumanTime(vesselData["ts"]))
+                
+                time.sleep(0.5)
+        else:
+            print("No MMSI of Interest!")
+        
+    except Exception as e:
+        print("Error:", e)
+
+
+def sleepTimerWithBar(sleepTime: int, dispIntervals: int):
+    def sleepTimerWithBarOutput(curr: int, total: int):
+        print("[" + "#" * curr + "-" * (total-curr) + "]", end="\r")
+    
+    for cnt in range(sleepTime):
+        sleepTimerWithBarOutput(cnt//dispIntervals, sleepTime//dispIntervals)
+        time.sleep(1)
+        
+    print("[" + "#" * (sleepTime//dispIntervals) + "]")
+        
+
+def constantUpdate_ShipHistory_MMSIOfInterest(updateInterval: int):
+    while True:
+        updateDBShipHistory_ALL_MMSIOfInterest()
+        print(f"Last update: {datetime.now()}")
+        sleepTimerWithBar(updateInterval, 5)
+        
+
 
 def CUSTOM_QUERIES():    
     # iterateThroughAOI(REDLAND_innocent_container_ships_ports_aoi_dict)
+    # iterateThroughAOI(WHOLE_OF_BLUELAND_innocent_container_ships_ports_aoi_dict)
     iterateThroughAOI(BLUELAND_innocent_container_ships_ports_aoi_dict)
     # iterateThroughAOI(GOLDLAND_TEST_aoi_dict, shipfilter=mil_unk_filter)
     
         
-def TEST_QUERY():            
-    pass
-    
+def TEST_QUERY():
+    constantUpdate_ShipHistory_MMSIOfInterest(1 * 60)
 
 
 
@@ -424,10 +540,10 @@ def TEST_QUERY():
 
 
 def main():
-    create_db.generateDB()
+    # create_db.generateDB(force_reset=True)
     
-    # TEST_QUERY()
-    CUSTOM_QUERIES()
+    TEST_QUERY()
+    # CUSTOM_QUERIES()
     
     
     
