@@ -1,5 +1,7 @@
 GLOBAL_DB_DEBUG = False
 
+COORDS_ACCURACY = 5
+
 # This is PURELY to track container ships and nothing else.
 import innocent_container_ships_ports
 REDLAND_innocent_container_ships_ports_aoi_dict = innocent_container_ships_ports.REDLAND_innocent_container_ships_ports_aoi_dict
@@ -73,7 +75,7 @@ def URLParamMaker(coords_arr: list, zoom: int, shipfilter: str = None) -> str:
    
 def printInfoTerrestrial(info: list):
     for cnt, data in enumerate(info):
-        print(f'TER-{cnt : <3} | {data["MMSI"] : <9} | {data["Ship Name"].decode("utf-8") : <20} | {round(data["Latitude"], 7)}, {round(data["Longitude"], 7)}')       
+        print(f'TER-{cnt : <3} | {data["MMSI"] : <9} | {data["Ship Name"].decode("utf-8") : <20} | {round(data["Latitude"], COORDS_ACCURACY)}, {round(data["Longitude"], COORDS_ACCURACY)}')       
 
 def printInfoTerrestrial_WithFilters(info: list, blacklist: bool = True, whitelist: bool = False):    
     info_len_len = int(len(str(len(info))))
@@ -85,7 +87,7 @@ def printInfoTerrestrial_WithFilters(info: list, blacklist: bool = True, whiteli
         
         if (blacklist and (vesseldata["type"] not in typefilter_blacklist))\
         or (whitelist and (vesseldata["type"] in typefilter_whitelist)):
-            print(f'({cnt:<{info_len_len}} of {len(info):<{info_len_len}}) | TER-{cnt : <4} | {data["MMSI"] : <9} | {data["Ship Name"].decode("utf-8") : <20} | {vesseldata["type"] : <25} | {vesseldata["country"] : <20} | {round(data["Latitude"], 7)}, {round(data["Longitude"], 7)} | {unixTimeToHumanTime(vesseldata["ts"]):<20}')
+            print(f'({cnt:<{info_len_len}} of {len(info):<{info_len_len}}) | TER-{cnt : <4} | {data["MMSI"] : <9} | {data["Ship Name"].decode("utf-8") : <20} | {vesseldata["type"] : <25} | {vesseldata["country"] : <20} | {round(data["Latitude"], COORDS_ACCURACY)}, {round(data["Longitude"], COORDS_ACCURACY)} | {unixTimeToHumanTime(vesseldata["ts"]):<20}')
         else:
             print(f'Skipping {cnt:<{info_len_len}} of {len(info):<{info_len_len}}', end="\r")
             
@@ -252,7 +254,7 @@ def getVesselData_MMSIOfInterest(mmsi: int) -> tuple:
 
 def printInfoSatellite(info: list):
     for cnt, data in enumerate(info):
-        print(f'SAT-{cnt : <3} | {str(round(data["Latitude"], 7)) + ", " + str(round(data["Longitude"], 7)):<25} \t| {round((int(data["msSinceLastPing"]) / 60000), 2)}')
+        print(f'SAT-{cnt : <3} | {str(round(data["Latitude"], COORDS_ACCURACY)) + ", " + str(round(data["Longitude"], COORDS_ACCURACY)):<25} \t| {round((int(data["msSinceLastPing"]) / 60000), 2)}')
 
 def processResponseSatellite(data: bytes) -> list:
     LOCAL_DEBUG = False
@@ -346,10 +348,10 @@ def runDBCommandsTerrestrial(terrestrial_info):
     for cnt, data in enumerate(terrestrial_info):
         time.sleep(1)
         
-        print(f"Processing {cnt:<{info_len_len}} of {len(terrestrial_info):<{info_len_len}}")
+        print(f"Processing {cnt+1:<{info_len_len}} of {len(terrestrial_info):<{info_len_len}}")
         vesseldata = getVesselData(data["MMSI"])
         
-        insertDBShipHistory(data["MMSI"], vesseldata["name"], round(data["Latitude"], 7), round(data["Longitude"], 7), unixTimeToHumanTime(vesseldata["ts"]))
+        insertDBShipHistory(data["MMSI"], vesseldata["name"], round(data["Latitude"], COORDS_ACCURACY), round(data["Longitude"], COORDS_ACCURACY), unixTimeToHumanTime(vesseldata["ts"]))
         insertDBShip(data["MMSI"], vesseldata["name"], vesseldata["country"], vesseldata["type"])
     
 
@@ -495,7 +497,7 @@ def updateDBShipHistory_ALL_MMSIOfInterest():
                 mmsi = row[0]
                 vesselLoc = getVesselData_MMSIOfInterest(mmsi)
                 vesselData = getVesselData(mmsi)
-                insertDBShipHistory(mmsi, vesselLoc[2], round(vesselLoc[0], 7), round(vesselLoc[1], 7), unixTimeToHumanTime(vesselData["ts"]))
+                insertDBShipHistory(mmsi, vesselLoc[2], round(vesselLoc[0], COORDS_ACCURACY), round(vesselLoc[1], COORDS_ACCURACY), unixTimeToHumanTime(vesselData["ts"]))
                 
                 time.sleep(0.5)
         else:
@@ -520,19 +522,19 @@ def constantUpdate_ShipHistory_MMSIOfInterest(updateInterval: int):
     while True:
         updateDBShipHistory_ALL_MMSIOfInterest()
         print(f"Last update: {datetime.now()}")
-        sleepTimerWithBar(updateInterval, 5)
+        sleepTimerWithBar(updateInterval, 1)
         
 
 
 def CUSTOM_QUERIES():    
     # iterateThroughAOI(REDLAND_innocent_container_ships_ports_aoi_dict)
-    # iterateThroughAOI(WHOLE_OF_BLUELAND_innocent_container_ships_ports_aoi_dict)
-    iterateThroughAOI(BLUELAND_innocent_container_ships_ports_aoi_dict)
+    iterateThroughAOI(WHOLE_OF_BLUELAND_innocent_container_ships_ports_aoi_dict)
+    # iterateThroughAOI(BLUELAND_innocent_container_ships_ports_aoi_dict)
     # iterateThroughAOI(GOLDLAND_TEST_aoi_dict, shipfilter=mil_unk_filter)
     
         
 def TEST_QUERY():
-    constantUpdate_ShipHistory_MMSIOfInterest(1 * 60)
+    constantUpdate_ShipHistory_MMSIOfInterest(5)
 
 
 
@@ -542,8 +544,9 @@ def TEST_QUERY():
 def main():
     # create_db.generateDB(force_reset=True)
     
-    TEST_QUERY()
-    # CUSTOM_QUERIES()
+    
+    # TEST_QUERY()
+    CUSTOM_QUERIES()
     
     
     
