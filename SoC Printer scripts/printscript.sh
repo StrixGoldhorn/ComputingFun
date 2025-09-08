@@ -53,7 +53,7 @@ read -p "Confirm above command? [Y/n]: " yn
 case $yn in 
   [Yy] )
     echo "Sending command, handing over to smbclient";
-    smbclient -U nusstu/${NUSNET_ID} //nts27.comp.nus.edu.sg/${PRINTER} -c "print ${1}";;
+    smbclient -U nusstu/${NUSNET_ID} //nts27.comp.nus.edu.sg/${PRINTER} -c "print ${FILENAME}";;
 
   [Nn] )
     echo "Cancelled operation, exiting.";
