@@ -15,3 +15,5 @@ mil_unk_filter = "68"
 GLOBAL_DB_DEBUG = False
 
 COORDS_ACCURACY = 5
+
+USER_DEFINED_REQ_PAUSE = 1

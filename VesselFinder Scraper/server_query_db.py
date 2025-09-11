@@ -14,7 +14,7 @@ def getAllRecent(hours:int) -> list:
         conn.row_factory = sqlite3.Row
         curs = conn.cursor()
         
-        curs.execute("SELECT lat, long, timestamp, ship_name FROM TER_AIS_ship_geo_history \
+        curs.execute("SELECT lat, long, timestamp, ship_name, mmsi FROM TER_AIS_ship_geo_history \
                     WHERE (unixepoch('now') - timestamp) < 60 * 60 * ? \
                     GROUP BY ship_name \
                     HAVING MAX(timestamp) \
@@ -37,6 +37,34 @@ def getAllRecent(hours:int) -> list:
     except Exception as e:
         print("Error:", e)
         return None
+    
+def getHistoryMMSI(hours:int, mmsi:int):
+    db_filepath = getDBFilepath()
+    
+    try:
+        conn = sqlite3.connect(db_filepath)
+        conn.row_factory = sqlite3.Row
+        curs = conn.cursor()
+        
+        curs.execute("SELECT lat, long, timestamp \
+                    FROM TER_AIS_ship_geo_history \
+                    WHERE (unixepoch('now') - timestamp) < 60 * 60 * ? \
+                    AND mmsi = ? \
+                    ORDER BY timestamp DESC", \
+                    (hours,mmsi))
+        shipPoints = curs.fetchall()
+
+        # Dear future me,
+        # Please fix the next few lines.
+
+        # convert Sqlite3.Row to dict
+        shipPoints = [dict(row) for row in shipPoints]
+
+        return shipPoints
+        
+    except Exception as e:
+        print("Error:", e)
+        return None 
 
 
 getAllRecent(12)

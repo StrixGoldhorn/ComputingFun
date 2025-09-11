@@ -28,65 +28,49 @@
     
 </head>
 <body>
+    <!-- Any error messages? -->
+    {% if error_msg is not none %}
+    <script>alert("{{error_msg}}")</script>
+    {% endif %}
     
     
+    <div id="map" style="width: 90%; height: 90%;"></div>
     
-    <div id="map" style="width: 90%; height: 100%;"></div>
+    <div id="controlPanel" style="width: 10%; height: 100%; position: absolute; left: 90%; top: 0%;">
+        <div>
+            <ul>
+                {% for shiploc in data %}
+                <li>{{ shiploc["ship_name"] }}: {{ shiploc["lat"] }}, {{ shiploc["long"] }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     
-    <!-- <div id="controlPanel" style="width: 10%; height: 100%; position: absolute; left: 90%; top: 0%;">
-        <form id="controlForm" action="/" method="get" onsubmit="return false">
-            <input type="submit" name="submit_button" value="Do Something">
-            <input type="submit" name="submit_button" value="Do Something Else">
-        </form>
-    </div> -->
     
-    <script>
-        /*
-        Prevent form from reloading page
-        */
-        // var form = document.getElementById("controlForm");
-        // function handleForm(event) { event.preventDefault(); } 
-        // form.addEventListener('submit', handleForm);
+
+    <script>       
         
-        
+        // Load base map
         const map = L.map('map').setView([1.3055486996437748, 104.03780777063871], 13);
         
         const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
+        
+        
+        
+        // Add ship markers to map
         /*
-        const marker = L.marker([51.5, -0.09]).addTo(map)
-        .bindPopup('<b>Hello world!</b><br />I am a popup.').openPopup();
         
-        const circle = L.circle([51.508, -0.11], {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        radius: 500
-        }).addTo(map).bindPopup('I am a circle.');
-        
-        const polygon = L.polygon([
-        [51.509, -0.08],
-        [51.503, -0.06],
-        [51.51, -0.047]
-        ]).addTo(map).bindPopup('I am a polygon.');
-        
-        
-        const popup = L.popup()
-        .setLatLng([51.513, -0.09])
-        .setContent('I am a standalone popup.')
-        .openOn(map);
-        
-        function onMapClick(e) {
-        popup
-        .setLatLng(e.latlng)
-        .setContent(`You clicked the map at ${e.latlng.toString()}`)
-        .openOn(map);
-        }
-        
-        map.on('click', onMapClick);
         */
+        {% for shiploc in data %}
+        const custom{{ shiploc["ship_name_modded"] }}circleMarker = L.marker([parseFloat({{ shiploc["lat"] }}), parseFloat({{ shiploc["long"] }})])
+        .addTo(map)
+        .bindPopup("{{ shiploc["ship_name"] }}, Reported MMSI: {{ shiploc["mmsi"] }}");
+        console.log(parseFloat({{ shiploc["lat"] }}), parseFloat({{ shiploc["long"] }}))
+        {% endfor %}
+        
     </script>
     
     

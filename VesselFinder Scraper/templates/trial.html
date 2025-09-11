@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <base target="_top">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+
     <title>Quick Start - Leaflet</title>
-    
+
     <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
         }
+
         .leaflet-container {
             height: 400px;
             width: 600px;
@@ -24,57 +29,59 @@
             max-height: 100%;
         }
     </style>
-    
-    
+
+
 </head>
+
 <body>
     <!-- Any error messages? -->
     {% if error_msg is not none %}
     <script>alert("{{error_msg}}")</script>
     {% endif %}
-    
-    
+
+
     <div id="map" style="width: 90%; height: 90%;"></div>
-    
+
     <div id="controlPanel" style="width: 10%; height: 100%; position: absolute; left: 90%; top: 0%;">
         <div>
             <ul>
                 {% for shiploc in data %}
-                <li>{{ shiploc["ship_name"] }}: {{ shiploc["lat"] }}, {{ shiploc["long"] }}</li>
+                <li>{{ shiploc["timestamp"] }}: {{ shiploc["lat"] }}, {{ shiploc["long"] }}</li>
                 {% endfor %}
             </ul>
         </div>
     </div>
-    
-    
 
-    <script>       
-        
+
+
+    <script>
+
         // Load base map
         const map = L.map('map').setView([1.3055486996437748, 104.03780777063871], 13);
-        
+
         const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
-        
-        
-        
-        // Add ship markers to map
-        
+
+
+        // create a red polyline from an array of LatLng points
+        var latlngs = [
         {% for shiploc in data %}
-        const {{ shiploc["ship_name_modded"] }}_circleMarker = L.circle([parseFloat({{ shiploc["lat"] }}), parseFloat({{ shiploc["long"] }})], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 15
-        }).addTo(map).bindPopup("{{ shiploc["ship_name"] }}");
-        console.log(parseFloat({{ shiploc["lat"] }}), parseFloat({{ shiploc["long"] }}))
+            [{{ shiploc["lat"] }}, {{ shiploc["long"] }}],
         {% endfor %}
-        
+            [{{ data[-1]["lat"] }}, {{ data[-1]["long"] }}]
+        ];
+
+        var polyline = L.polyline(latlngs, { color: 'red' }).addTo(map);
+
+        // zoom the map to the polyline
+        map.fitBounds(polyline.getBounds());
+
     </script>
-    
-    
-    
+
+
+
 </body>
+
 </html>

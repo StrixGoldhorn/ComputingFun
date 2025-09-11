@@ -8,6 +8,7 @@ BLUELAND_innocent_container_ships_ports_aoi_dict = innocent_container_ships_port
 # GOLDLAND_TEST_aoi_dict = innocent_container_ships_ports.GOLDLAND_TEST_aoi_dict
 
 from Vessel_Finder_Scrape import *
+from server import *
 
 
 from USER_SETTINGS import *
@@ -20,6 +21,7 @@ from datetime import datetime
 import sqlite3
 import os
 import create_db
+import threading
 
 
 # def unixTimeToHumanTime(unixtime: int) -> str:
@@ -43,7 +45,7 @@ def runDBCommandsTerrestrial(terrestrial_info):
     info_len_len = int(len(str(len(terrestrial_info))))
     
     for cnt, data in enumerate(terrestrial_info):
-        time.sleep(1)
+        time.sleep(USER_DEFINED_REQ_PAUSE)
         
         print(f"Processing {cnt+1:<{info_len_len}} of {len(terrestrial_info):<{info_len_len}}")
         vesseldata = getVesselData(data["MMSI"])
@@ -54,8 +56,11 @@ def runDBCommandsTerrestrial(terrestrial_info):
 
 
 def getDBFilepath() -> str:
-    ownfilepath = os.path.dirname(os.path.abspath(__file__))
-    db_filepath = os.path.join(ownfilepath, "ships.db")
+    # ownfilepath = os.path.dirname(os.path.abspath(__file__))
+    # db_filepath = os.path.join(ownfilepath, "ships.db")
+
+    # TEMP FIX (error when trying to get __file__)
+    db_filepath = "./ships.db"
     return db_filepath
 
 def checkDBExistsShip(mmsi: int, ship_name: str) -> bool:
@@ -244,15 +249,25 @@ def TEST_QUERY():
     # constantUpdate_ShipHistory_MMSIOfInterest(5)
     while True:
         iterateThroughAOI(BLUELAND_innocent_container_ships_ports_aoi_dict)
-        sleepTimerWithBar(60, 6)
+        sleepTimerWithBar(10, 1)
+
+def THREADING_MASTER():
+    thread1 = threading.Thread(target=TEST_QUERY)
+    thread2 = threading.Thread(target=START_FLASK_APP)
+
+    thread1.start()
+    thread2.start()
+
 
 
 
 def main():
-    create_db.generateDB(force_reset=True)
-    TEST_QUERY()
+    # create_db.generateDB(force_reset=True)
+    # TEST_QUERY()
     # CUSTOM_QUERIES()
-    
+    # START_FLASK_APP()
+
+    THREADING_MASTER()
     
     
         

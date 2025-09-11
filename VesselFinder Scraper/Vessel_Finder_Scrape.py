@@ -50,7 +50,7 @@ def printInfoTerrestrial_WithFilters(info: list, blacklist: bool = True, whiteli
     info_len_len = int(len(str(len(info))))
     
     for cnt, data in enumerate(info):
-        time.sleep(1)
+        time.sleep(USER_DEFINED_REQ_PAUSE)
         
         vesseldata = getVesselData(data["MMSI"])
         
