@@ -27,10 +27,14 @@ PRINTER="pstsc"
 
 You can edit the file however way you like, via vim/emacs/micro/nano/notepad++/HxD.
 
-4. After which, just run `./printscript.sh <filename-to-be-printed> <OPTIONAL: printer>`
+4. After setting up, you can just run `./printscript.sh -f <filename-to-be-printed>` from now on
 
-5. Check that the params are all correct
+5. Other params you can tag on:
+   - `-h` or `--help`              Displays help message.
+   - `-l` or `--list-printers`     Prints out list of printers and associated code.
+   - `-p` or `--printer[=PRINTER]` Changes to print on specified printer.     
+   - `-u` or `--user[=NUSNET_ID]`  Changes the NUSNET ID used to print.
 
-6. `Y` or `y` to confirm. This will run the long-winded command and connect you to the printer. Follow on-screen commands to proceed.
+6. Check that the params are all correct
 
-(Hint: just add desired printer as a second param instead of having to edit the file.)
+7. `Y` or `y` to confirm. This will run the long-winded command and connect you to the printer. Follow on-screen commands to proceed.
