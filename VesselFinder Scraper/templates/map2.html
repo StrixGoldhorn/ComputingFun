@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+    DISCLAIMER:
+    Vibe-coded with Qwen3-235B-A22B-2507,
+    with map.html as the original template supplied to Qwen.
+
+    (Human) Changes made to for-loop, LLM failed to recognise the need for unique varnames for const variables.
+    -->
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Maritime Tracker - Ship Monitoring System</title>
+    
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a3a6c, #0d2b55);
+            color: white;
+            padding: 12px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header h1 svg {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        #map {
+            flex: 1;
+            height: 100%;
+            border-radius: 0 0 0 8px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .control-panel {
+            width: 320px;
+            height: 100%;
+            background: white;
+            border-left: 1px solid #e0e6ed;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -3px 0 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: 16px;
+            border-bottom: 1px solid #e0e6ed;
+            background: #f8fafc;
+        }
+        
+        .panel-header h2 {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .panel-header p {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .status-active {
+            background-color: #10b981;
+        }
+        
+        .status-inactive {
+            background-color: #ef4444;
+        }
+        
+        .search-container {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e6ed;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        .ships-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        
+        .ship-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .ship-item:hover {
+            background-color: #f8fafc;
+            transform: translateX(4px);
+        }
+        
+        .ship-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+        
+        .ship-info {
+            flex: 1;
+        }
+        
+        .ship-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .ship-details {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .ship-detail {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .ship-detail svg {
+            width: 14px;
+            height: 14px;
+            color: #94a3b8;
+        }
+        
+        .status-bar {
+            padding: 10px 16px;
+            background: #f8fafc;
+            border-top: 1px solid #e0e6ed;
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+        
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        /* Custom scrollbar for modern browsers */
+        .ships-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .ships-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .ships-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .ships-list::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .control-panel {
+                width: 280px;
+            }
+            
+            .ship-item {
+                padding: 10px 14px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .control-panel {
+                width: 100%;
+                height: auto;
+                max-height: 50vh;
+                border-left: none;
+                border-top: 1px solid #e0e6ed;
+            }
+            
+            .main-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if error_msg is not none %}
+    <div id="errorNotification" class="notification error">
+        <svg class="notification-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        {{ error_msg }}
+    </div>
+    {% endif %}
+    
+    <div class="header">
+        <h1>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Maritime Tracker Dashboard
+        </h1>
+    </div>
+    
+    <div class="main-container">
+        <div id="map"></div>
+        
+        <div class="control-panel">
+            <div class="panel-header">
+                <h2>
+                    <span class="status-indicator status-active"></span>
+                    Active Ship Monitoring
+                </h2>
+                <p>{{ data|length }} ships currently tracked</p>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" class="search-box" id="shipSearch" placeholder="Search ships...">
+            </div>
+            
+            <div class="ships-list" id="shipsList">
+                {% for shiploc in data %}
+                <div class="ship-item" data-mmsi="{{ shiploc['mmsi'] }}" 
+                     data-lat="{{ shiploc['lat'] }}" data-lng="{{ shiploc['long'] }}">
+                    <div class="ship-icon">
+                        {% if shiploc['ship_type'] == 'Cargo' %}
+                        C
+                        {% elif shiploc['ship_type'] == 'Tanker' %}
+                        T
+                        {% else %}
+                        S
+                        {% endif %}
+                    </div>
+                    <div class="ship-info">
+                        <div class="ship-name">
+                            {{ shiploc["ship_name"] }}
+                            <span style="font-weight: normal; color: #64748b;">(MMSI: {{ shiploc["mmsi"] }})</span>
+                        </div>
+                        <div class="ship-details">
+                            <div class="ship-detail">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                {{ "%.4f"|format(shiploc["lat"]|float) }}, {{ "%.4f"|format(shiploc["long"]|float) }}
+                            </div>
+                            {% if shiploc["course"] is not none %}
+                            <div class="ship-detail">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                                {{ shiploc["course"] }}°
+                            </div>
+                            {% endif %}
+                            {% if shiploc["speed"] is not none %}
+                            <div class="ship-detail">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                {{ shiploc["speed"] }} knots
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="status-bar">
+                <div>Data refreshed: Just now</div>
+                <div>Map source: OpenStreetMap</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load base map
+        const map = L.map('map').setView([1.3055486996437748, 104.03780777063871], 13);
+        
+        const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        
+        // Ship marker colors by type
+        const shipTypeColors = {
+            'Cargo': '#3b82f6',
+            'Tanker': '#ef4444',
+            'Passenger': '#10b981',
+            'Default': '#8b5cf6'
+        };
+        
+        // Track ship markers for highlighting
+        const shipMarkers = {};
+        
+        // Add ship markers to map
+        {% for shiploc in data %}
+        const shipType{{ shiploc["ship_name_modded"] }} = "{{ shiploc['ship_type'] }}";
+        const markerColor{{ shiploc["ship_name_modded"] }} = shipTypeColors[shipType{{ shiploc["ship_name_modded"] }}] || shipTypeColors['Default'];
+        
+        // Create custom icon based on ship type
+        const shipIcon{{ shiploc["ship_name_modded"] }} = L.divIcon({
+            className: 'ship-marker',
+            html: `<div style="background: ${markerColor{{ shiploc["ship_name_modded"] }}}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
+        });
+        
+        const marker{{ shiploc["ship_name_modded"] }} = L.marker([parseFloat({{ shiploc["lat"] }}), parseFloat({{ shiploc["long"] }})], {
+            icon: shipIcon{{ shiploc["ship_name_modded"] }}
+        }).addTo(map).bindPopup("{{ shiploc["ship_name"] }}, MMSI: {{ shiploc["mmsi"] }}");
+        
+        shipMarkers["{{ shiploc['mmsi'] }}"] = marker{{ shiploc["ship_name_modded"] }};
+        {% endfor %}
+        
+        // Add interactivity to ship list items
+        document.querySelectorAll('.ship-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const lat = parseFloat(this.dataset.lat);
+                const lng = parseFloat(this.dataset.lng);
+                map.setView([lat, lng], 15);
+                
+                // Highlight the marker temporarily
+                const marker = shipMarkers[this.dataset.mmsi];
+                if (marker) {
+                    const originalIcon = marker.options.icon;
+                    const highlightedIcon = L.divIcon({
+                        className: 'ship-marker highlighted',
+                        html: `<div style="background: #f59e0b; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.5);"></div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+                    
+                    marker.setIcon(highlightedIcon);
+                    setTimeout(() => {
+                        marker.setIcon(originalIcon);
+                    }, 1500);
+                }
+            });
+        });
+        
+        // Search functionality
+        const searchBox = document.getElementById('shipSearch');
+        if (searchBox) {
+            searchBox.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                document.querySelectorAll('.ship-item').forEach(item => {
+                    const shipName = item.querySelector('.ship-name').textContent.toLowerCase();
+                    if (shipName.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Show error notification if exists
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorNotification = document.getElementById('errorNotification');
+            if (errorNotification) {
+                setTimeout(() => {
+                    errorNotification.classList.add('show');
+                    setTimeout(() => {
+                        errorNotification.classList.remove('show');
+                    }, 5000);
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

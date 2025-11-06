@@ -11,7 +11,7 @@ def index():
         if data == None:
               error_msg = "Unable to get data"
 
-        return render_template("map.html", error_msg=error_msg, data=data)
+        return render_template("map2.html", error_msg=error_msg, data=data)
 
 # To use: /history?mmsi=1234567890&time=2400
 @app.route("/history")
