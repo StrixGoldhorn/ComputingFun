@@ -1,0 +1,76 @@
+<!-- Thanks Qwen -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship History Tracker - MMSI {{ mmsi }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav class="nav-menu">
+        <a href="/" class="nav-item">Fleet View</a>
+    </nav>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="ship-icon">⚓</span>
+                <h1>Ship History Tracker</h1>
+            </div>
+            <div class="controls">
+                <div class="ship-info">
+                    <span class="mmsi-label">MMSI: </span>
+                    <span class="mmsi-value">{{ mmsi }}</span>
+                </div>
+                <button id="refresh-btn" class="action-btn">Refresh</button>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+
+            <div class="ships-table-container">
+                <div class="table-header">
+                    <h2>Historical Positions</h2>
+                    <div class="table-actions">
+                        <span id="position-count">0 positions</span>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="ships-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Position</th>
+                                <th>Speed (knots)</th>
+                                <th>Course</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Maritime Tracker • Data updated every 5 minutes • Last refresh: <span id="last-refresh">-</span></p>
+        </footer>
+
+        <div class="loading-overlay" id="loading">
+            <div class="spinner"></div>
+            <p>Loading ship history...</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/history.js') }}"></script>
+</body>
+</html>

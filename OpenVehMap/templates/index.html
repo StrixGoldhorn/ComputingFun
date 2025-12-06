@@ -1,0 +1,98 @@
+<!-- Thanks Qwen -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maritime Tracker - Live Fleet View</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav class="nav-menu">
+        <a href="/" class="nav-item active">Fleet View</a>
+    </nav>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="ship-icon">⚓</span>
+                <h1>Maritime Tracker</h1>
+            </div>
+            <div class="controls">
+                <div class="search-container">
+                    <input type="text" id="search-box" placeholder="Search by MMSI or Ship Name...">
+                    <button id="search-btn">🔍</button>
+                </div>
+                <button id="refresh-btn" class="action-btn">Refresh</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="map-overlay">
+                    <div class="info-panel">
+                        <h3>Active Vessels (Last 24h)</h3>
+                        <p id="vessel-count">0 vessels</p>
+                        <div class="map-controls">
+                            <button id="zoom-all-btn" class="control-btn">View All Vessels</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ships-table-container">
+                <div class="table-header">
+                    <h2>Recent Vessel Activity</h2>
+                    <div class="table-actions">
+                        <button id="export-btn" class="action-btn">Export CSV</button>
+                        <select id="sort-by">
+                            <option value="time">Sort by Time</option>
+                            <option value="mmsi">Sort by MMSI</option>
+                            <option value="name">Sort by Name</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="ships-table">
+                        <thead>
+                            <tr>
+                                <th>MMSI</th>
+                                <th>Ship Name</th>
+                                <th>Position</th>
+                                <th>Last Update</th>
+                                <th>Speed (knots)</th>
+                                <th>Course</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button id="prev-page" disabled>Previous</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button id="next-page" disabled>Next</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Maritime Tracker • Data updated every 5 minutes • Last refresh: <span id="last-refresh">-</span></p>
+        </footer>
+
+        <div class="loading-overlay" id="loading">
+            <div class="spinner"></div>
+            <p>Loading vessel data...</p>
+        </div>
+
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    </div>
+</body>
+</html>

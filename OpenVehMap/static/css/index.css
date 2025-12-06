@@ -1,0 +1,176 @@
+/* Thanks Qwen */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.map-container {
+    position: relative;
+    height: 80vh;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+.map-overlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+}
+
+.info-panel {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    padding: 0.8rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+}
+
+.map-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.ships-table-container {
+    background: white;
+    border-radius: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    background: #ebf4ff;
+    border-bottom: 1px solid #bee3f8;
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+#sort-by {
+    padding: 0.4rem;
+    border-radius: 4px;
+    border: 1px solid #cbd5e0;
+}
+
+.table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#ships-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    flex: 1;
+    min-height: 0;
+}
+
+#ships-table th {
+    background: #3182ce;
+    color: white;
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    position: sticky;
+    top: 0;
+}
+
+#ships-table td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#ships-table tr:hover {
+    background-color: #ebf8ff;
+}
+
+.ship-name {
+    font-weight: 600;
+    color: #2c5282;
+}
+
+.position {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.action-link {
+    color: #3182ce;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.action-link:hover {
+    text-decoration: underline;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.8rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    gap: 1rem;
+}
+
+#page-info {
+    font-weight: 500;
+    color: #4a5568;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0 0.8rem;
+    color: #718096;
+    font-size: 0.85rem;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 1rem;
+}
+
+/* Responsive adjustments */
+@media (min-width: 992px) {
+    .main-content {
+        grid-template-columns: 2fr 1fr;
+        gap: 1rem;
+    }
+    
+    .ships-table-container {
+        height: 80vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .table-wrapper {
+        flex: 1;
+        overflow-y: auto;
+    }
+    
+    .pagination {
+        border-top: none;
+    }
+}
