@@ -24,8 +24,8 @@ class ScraperMain:
                 print(f"Scanning - {mmsi[0]}")
                 classes.VesselFinderScraper.VesselFinderScraper.scanAndSaveShipToDB(mmsi[0])
                 time.sleep(10)
-            print("Sleeping MMSI of Interest scan for 300s")
-            time.sleep(300)
+            print("Sleeping MMSI of Interest scan for 60s")
+            time.sleep(60)
 
     @staticmethod
     def main():
@@ -35,7 +35,7 @@ class ScraperMain:
         VFAoiThread = threading.Thread(target=ScraperMain.VesselFinderScrapeAllAois)
         VFmmsiThread = threading.Thread(target=ScraperMain.VesselFinderScrapeAllMMSI)
         
-        # threads.append(VFAoiThread)
+        threads.append(VFAoiThread)
         threads.append(VFmmsiThread)
 
         for thread in threads:

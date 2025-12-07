@@ -186,6 +186,23 @@ class ShipDBActions:
 
         finally:
             dataconn.close()
+            
+    @staticmethod
+    def addMmsiOfInterest(mmsi: int):
+        try:
+            dataconn = ShipDBActions.getDataDBConnection()
+            datacurs = dataconn.cursor()
+            datacurs.execute("INSERT INTO mmsiOfInterest (mmsi) VALUES (?)", (mmsi,))
+            dataconn.commit()
+            datacurs.close()
+            dataconn.close()
+
+        except Exception as e:
+            print(f"ERROR - ShipDBActions - addMmsiOfInterest: {e}")
+            AudtiDBActions.writeToAuditDB("error", "ShipDBActions - addMmsiOfInterest", f"{e}")
+
+        finally:
+            dataconn.close()
 
     @staticmethod
     def getAllmmsiOfInterest() -> list:
