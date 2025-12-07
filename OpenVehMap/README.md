@@ -6,7 +6,12 @@ UI/UX was designed and implemented with the help of LLM (Qwen).
 The rest of the code (backend) was done by yours truly.
 
 ## Description
-Designed to be a modular dashboard, where users can easily add info from multiple data sources, supplying location of various assets.
+Designed to be a modular dashboard, where users can easily add info from **multiple data sources**, supplying location of various assets.
+
+Currently, as a proof of concept, 2 data sources are being used.
+
+- [VesselFinder](https://www.vesselfinder.com/)
+- [AISFriends](https://www.aisfriends.com/)
 
 Users are able to add vehicle IDs of interest to specifically track them.
 
