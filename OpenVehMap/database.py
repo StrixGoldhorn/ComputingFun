@@ -239,7 +239,7 @@ class ShipDBActions:
             output = []
             curs = conn.cursor()
             curs.execute("SELECT GeoShipInfo.mmsi, GeoShipInfo.shipName, " \
-            "LocationLog.lat, LocationLog.long, LocationLog.timestamp, " \
+            "LocationLog.lat, LocationLog.long, MAX(LocationLog.timestamp), " \
             "ShipStatusLog.speed, ShipStatusLog.course, GeoShipInfo.shipType " \
             "FROM GeoShipInfo, LocationLog, ShipStatusLog " \
             "WHERE GeoShipInfo.vehID = LocationLog.vehID AND ShipStatusLog.locationLogID = LocationLog.id AND LocationLog.timestamp >= strftime('%s', 'now') - 86400 " \
