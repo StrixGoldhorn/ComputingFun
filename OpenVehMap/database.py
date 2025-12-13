@@ -5,6 +5,8 @@ import os
 from datetime import datetime
 
 class DatabaseMain:
+    DATABASE_FOLDER_NAME = "db_folder"
+    
     @staticmethod
     def main():
         DatabaseINIT.main()
@@ -17,7 +19,7 @@ class AudtiDBActions:
     @staticmethod
     def getAuditDBConnection() -> sqlite3.Connection:
         """Get a connection to the main audit database"""
-        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "db_folder", "audit.db")
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DatabaseMain.DATABASE_FOLDER_NAME, "audit.db")
         return sqlite3.connect(db_path)
     
     @staticmethod
@@ -37,7 +39,7 @@ class AoiDBActions:
     @staticmethod
     def getAoiDBConnection() -> sqlite3.Connection:
         """Get a connection to the main audit database"""
-        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "db_folder", "aoi.db")
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DatabaseMain.DATABASE_FOLDER_NAME, "aoi.db")
         return sqlite3.connect(db_path)
     
     @staticmethod
@@ -103,7 +105,7 @@ class DataSourceDBActions:
     @staticmethod
     def getDataSourceDBConnection() -> sqlite3.Connection:
         """Get a connection to the main audit database"""
-        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "db_folder", "datasource.db")
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DatabaseMain.DATABASE_FOLDER_NAME, "datasource.db")
         return sqlite3.connect(db_path)
     
     @staticmethod
@@ -123,7 +125,7 @@ class ShipDBActions:
     @staticmethod
     def getDataDBConnection() -> sqlite3.Connection:
         """Get a connection to the main data database"""
-        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "db_folder", "data.db")
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DatabaseMain.DATABASE_FOLDER_NAME, "data.db")
         return sqlite3.connect(db_path)
 
     @staticmethod
@@ -134,7 +136,7 @@ class ShipDBActions:
             curs = conn.cursor()
 
             curs.execute("SELECT mmsi, shipName, country, shipType FROM GeoShipInfo " \
-            "WHERE mmsi = ? AND shipName = ? AND country = ? AND shipType = ?", (mmsi, shipname, country, shiptype))
+            "WHERE mmsi = ? AND shipName = ?", (mmsi, shipname))
             if curs.fetchone():
                 pass
             else:
@@ -166,7 +168,7 @@ class ShipDBActions:
             ShipDBActions.addGeoShip(mmsi, shipname, country, shiptype)
 
             datacurs.execute("SELECT vehID FROM GeoShipInfo " \
-            "WHERE mmsi = ? AND shipName = ? AND country = ? AND shipType = ?", (mmsi, shipname, country, shiptype))
+            "WHERE mmsi = ? AND shipName = ?", (mmsi, shipname))
 
             vehid = datacurs.fetchone()[0]
 
