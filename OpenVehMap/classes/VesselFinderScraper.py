@@ -15,7 +15,8 @@ class VesselFinderScraper(geoShipSource):
             randint2 = randint(100, 300)
             headers = {
                 'User-Agent': f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/{randint1}.36 (KHTML, like Gecko) Chrome/{randint2}.0.0.0 Safari/{randint1}.36',
-                'Dnt': '1'
+                'Dnt': '1',
+                'Referer' : 'https://www.vesselfinder.com/api/pub/ml/'
             }
             vesseldata_url = f"https://www.vesselfinder.com/api/pub/click/{mmsi}"
             vesseldata = json.loads((requests.request("GET", vesseldata_url, headers=headers)).text)
@@ -28,7 +29,8 @@ class VesselFinderScraper(geoShipSource):
         randint2 = randint(100, 300)
         headers = {
             'User-Agent': f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/{randint1}.36 (KHTML, like Gecko) Chrome/{randint2}.0.0.0 Safari/{randint1}.36',
-            'Dnt': '1'
+            'Dnt': '1',
+            'Referer' : 'https://www.vesselfinder.com/api/pub/ml/'
         }
         response = requests.request("GET", baseurl+str(mmsi), headers=headers)
         
