@@ -1,7 +1,8 @@
 import time
 from database import *
-import classes.VesselFinderScraper, classes.AISFriendsScraper
+import classes.VesselFinderScraper, classes.AISFriendsScraper, classes.MyShipTrackingScraper
 import threading
+import random
 
 class ScraperMain:
     @staticmethod
@@ -23,9 +24,9 @@ class ScraperMain:
             for mmsi in mmsis:
                 print(f"Scanning VesselFinderScraper - MMSI - {mmsi[0]}")
                 classes.VesselFinderScraper.VesselFinderScraper.scanAndSaveShipToDB(mmsi[0])
-                time.sleep(10)
+                time.sleep(30)
             print("Sleeping VesselFinderScraper MMSI of Interest scan for 60s")
-            time.sleep(60)
+            time.sleep(120)
             
     @staticmethod
     def AISFriendsScrapeAllAois():
@@ -39,19 +40,35 @@ class ScraperMain:
             print("Sleeping AISFriendsScraper AOI scan for 60s")
             time.sleep(60)
             
+    @staticmethod
+    def MyShipTrackingScrapeAllAois():
+        while True:
+            aois = AoiDBActions.getAllAoi()
+            for aoi in aois:
+                coords = [aoi[1], aoi[2], aoi[3], aoi[4]]
+                print(f"Scanning MyShipTrackingScraper - AOI - {aoi[0]}")
+                classes.MyShipTrackingScraper.MyShipTrackingScraper.scanAndSaveAreaToDB(coords)
+                time.sleep(60)
+            print("Sleeping MyShipTrackingScraper AOI scan for 60s")
+            time.sleep(60)
+            
+            
 
     @staticmethod
     def main():
-        print("RUNNING")
+        print("Scraper RUNNING")
         threads = []
 
         VFAoiThread = threading.Thread(target=ScraperMain.VesselFinderScrapeAllAois)
         VFmmsiThread = threading.Thread(target=ScraperMain.VesselFinderScrapeAllMMSI)
-        threads.append(VFAoiThread)
-        threads.append(VFmmsiThread)
+        # threads.append(VFAoiThread)
+        # threads.append(VFmmsiThread)
         
         AISFAoiThread = threading.Thread(target=ScraperMain.AISFriendsScrapeAllAois)
         threads.append(AISFAoiThread)
+        
+        MSTAoiThread = threading.Thread(target=ScraperMain.MyShipTrackingScrapeAllAois)
+        threads.append(MSTAoiThread)
 
         for thread in threads:
             thread.start()
