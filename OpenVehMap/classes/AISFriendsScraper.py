@@ -1,8 +1,10 @@
 from .geoShipSource import geoShipSource
 import requests
-from database import ShipDBActions, AudtiDBActions, DataSourceDBActions
+from database import ShipDBActions, AudtiDBActions, DataSourceDBActions, DatabaseMain
 from random import randint
 import json
+import sqlite3
+import os
 
 class AISFriendsScraper(geoShipSource):
     @staticmethod
@@ -54,8 +56,11 @@ class AISFriendsScraper(geoShipSource):
                 trueheading = vesseldata['true_heading']
                 rateofturn = vesseldata['rate_of_turn']
             
+                vessel_id = vesseldata['vessel_id']
+            
                 try:
                     ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn)
+                    AISFriendsScraper.addToOwnDB(mmsi, vessel_id)
                     # AudtiDBActions.writeToAuditDB("write", "AISFriendsScraper - scanAndSaveAreaToDB", f"Saved area to DB, Area: {coords_arr}")
                 except Exception as e:
                     print(f"ERROR - AISFriendsScraper - scanAndSaveAreaToDB, Unable to save to DB: {e}")
@@ -96,4 +101,102 @@ class AISFriendsScraper(geoShipSource):
     def scanAndSaveShipToDB(mmsi: int):
         # Unfortunately, this site does not have a direct way of getting a ship info from just its mmsi
         # Refer to getShipInfo for all the info required
-        pass
+        
+        try:
+            conn = AISFriendsScraper.getAISFriendsDBConnection()
+            curs = conn.cursor()
+
+            curs.execute("SELECT vessel_id FROM shipdata WHERE mmsi = ?", (mmsi,))
+            vessel_id = curs.fetchone()[0]
+
+            conn.commit()
+            curs.close()
+            conn.close()
+            
+            vesseldata = AISFriendsScraper.getShipInfo(vessel_id)
+                
+            lat = vesseldata['latitude']    
+            long = vesseldata['longitude']
+            timestamp = vesseldata['timestamp_of_position']
+            mmsi = vesseldata['mmsi']
+            shipname = vesseldata['name_ais']
+            country = vesseldata['flag']
+            shiptype = vesseldata['type']
+            speed = vesseldata['speed_over_ground']
+            course = vesseldata['course_over_ground']
+            trueheading = vesseldata['true_heading']
+            rateofturn = vesseldata['rate_of_turn']
+        
+            vessel_id = vesseldata['vessel_id']
+        
+            try:
+                ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn)
+            except Exception as e:
+                print(f"ERROR - AISFriendsScraper - scanAndSaveShipToDB, Unable to save to DB: {e}")
+                AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - scanAndSaveShipToDB", f"Unable to save to DB, MMSI: {mmsi}")
+            
+        except Exception as e:
+            print(f"ERROR - AISFriendsScraper - scanAndSaveShipToDB: {e}")
+            AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - scanAndSaveShipToDB", f"{e}")
+
+        finally:
+            conn.close()
+        
+    
+    @staticmethod
+    def getDBfilepath(dbname: str) -> str:
+        ownfilepath = os.path.dirname(os.path.abspath(__file__))
+        db_folder = os.path.join(ownfilepath, "../db_folder")
+        os.makedirs(db_folder, exist_ok=True)
+        created_filepath = os.path.join(db_folder, dbname)
+        return created_filepath
+    
+    @staticmethod
+    def initOwnDB():
+        dbname = "AISFriends.db"
+        created_filepath = AISFriendsScraper.getDBfilepath(dbname)
+        
+        try:
+            conn = sqlite3.connect(created_filepath)
+            curs = conn.cursor()
+
+            curs.execute("CREATE TABLE IF NOT EXISTS shipdata \
+                        (id INTEGER PRIMARY KEY AUTOINCREMENT, \
+                        mmsi INTEGER NOT NULL, \
+                        vessel_id INTEGER NOT NULL)")
+            
+            conn.commit()
+            print(f"{dbname} successfully created")
+            
+        except Exception as e:
+            print("Error:", e)
+            
+    @staticmethod
+    def getAISFriendsDBConnection() -> sqlite3.Connection:
+        """Get a connection to the AISFriends database"""
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", DatabaseMain.DATABASE_FOLDER_NAME, "AISFriends.db")
+        return sqlite3.connect(db_path)
+    
+    @staticmethod
+    def addToOwnDB(mmsi: int, vessel_id: int):
+        try:
+            conn = AISFriendsScraper.getAISFriendsDBConnection()
+            curs = conn.cursor()
+
+            curs.execute("SELECT mmsi, vessel_id FROM shipdata " \
+            "WHERE mmsi = ? AND vessel_id = ?", (mmsi, vessel_id))
+            if curs.fetchone():
+                pass
+            else:
+                curs.execute("INSERT INTO shipdata (mmsi, vessel_id) VALUES (?, ?)", (mmsi, vessel_id))
+
+            conn.commit()
+            curs.close()
+            conn.close()
+        
+        except Exception as e:
+            print(f"ERROR - AISFriendsScraper - addToOwnDB: {e}")
+            AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - addToOwnDB", f"{e}")
+
+        finally:
+            conn.close()

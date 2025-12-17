@@ -44,6 +44,18 @@ class ScraperMain:
             time.sleep(60)
             
     @staticmethod
+    def AISFriendsScrapeAllMMSI():
+        while True:
+            mmsis = ShipDBActions.getAllmmsiOfInterest()
+            random.shuffle(mmsis)
+            for mmsi in mmsis:
+                print(f"Scanning AISFriendsScraper - MMSI - {mmsi[0]}")
+                classes.AISFriendsScraper.AISFriendsScraper.scanAndSaveShipToDB(mmsi[0])
+                time.sleep(60)
+            print("Sleeping AISFriendsScraper MMSI of Interest scan for 60s")
+            time.sleep(120)
+            
+    @staticmethod
     def MyShipTrackingScrapeAllAois():
         while True:
             aois = AoiDBActions.getAllAoi()
@@ -68,8 +80,11 @@ class ScraperMain:
         threads.append(VFAoiThread)
         # threads.append(VFmmsiThread)
         
+        classes.AISFriendsScraper.AISFriendsScraper.initOwnDB()
         AISFAoiThread = threading.Thread(target=ScraperMain.AISFriendsScrapeAllAois)
+        AISFmmsiThread = threading.Thread(target=ScraperMain.AISFriendsScrapeAllMMSI)
         threads.append(AISFAoiThread)
+        threads.append(AISFmmsiThread)
         
         MSTAoiThread = threading.Thread(target=ScraperMain.MyShipTrackingScrapeAllAois)
         threads.append(MSTAoiThread)
