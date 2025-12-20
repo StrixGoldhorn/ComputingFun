@@ -226,7 +226,7 @@ class ShipDBActions:
             conn.close()
 
     @staticmethod
-    def getHistoryOfMMSI(mmsi: int) -> tuple:
+    def getHistoryOfMMSI(mmsi: int) -> list:
         '''
         Returns history of mmsi
         '''
@@ -244,6 +244,33 @@ class ShipDBActions:
         except Exception as e:
             print(f"ERROR - ShipDBActions - getHistoryOfMMSI: {e}")
             AudtiDBActions.writeToAuditDB("error", "ShipDBActions - getHistoryOfMMSI", f"{e}")
+        finally:
+            curs.close()
+            conn.close()
+
+    @staticmethod
+    def getInfoOfMMSI(mmsi: int) -> dict:
+        '''
+        Returns vessel info of mmsi
+        '''
+        conn = ShipDBActions.getDataDBConnection()
+        try:
+            curs = conn.cursor()
+            curs.execute("SELECT shipName, mmsi, country, shipType FROM GeoShipInfo WHERE mmsi = ?", (mmsi, ))
+            conn.commit()
+            data = curs.fetchone()
+            print(data)
+            output = {
+                "name": f"{data[0]}",
+                "mmsi": f"{data[1]}",
+                "country": f"{data[2]}",
+                "type": f"{data[3]}"
+                }
+            print(output)
+            return output
+        except Exception as e:
+            print(f"ERROR - ShipDBActions - getInfoOfMMSI: {e}")
+            AudtiDBActions.writeToAuditDB("error", "ShipDBActions - getInfoOfMMSI", f"{e}")
         finally:
             curs.close()
             conn.close()

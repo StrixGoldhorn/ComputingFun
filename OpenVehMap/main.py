@@ -18,6 +18,12 @@ class WebServer:
         def api_history(mmsi):
             data = ShipDBActions.getHistoryOfMMSI(mmsi)
             return jsonify(data)
+        
+        # Thanks Qwen
+        @app.route('/api/ship/<mmsi>')
+        def api_ship_info(mmsi):
+            ship_details = ShipDBActions.getInfoOfMMSI(mmsi)  # Your existing function
+            return jsonify(ship_details)
 
         # Thanks Qwen
         @app.route('/')
