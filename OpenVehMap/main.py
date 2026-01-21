@@ -35,6 +35,27 @@ class WebServer:
         def api_ships_last24h():
             ships = ShipDBActions.getShips24h()  # Your existing function
             return jsonify(ships)
+        
+        @app.route('/ships')
+        def all_ships():
+            return render_template('ships.html')
+
+        @app.route('/api/ships/page/<int:offset>')
+        def api_ships_page(offset):
+            n = 20  # Number of ships per page (you can adjust this)
+            m = offset // n  # Calculate page number
+            
+            # Call your function: getNShipsWithOffestMxN(n, m)
+            ships_data = ShipDBActions.getNShipsWithOffestMxN(n, m)
+            
+            # You'll need to implement a function to get total count
+            # This might require another call to your database
+            total_ships = ShipDBActions.getTotalGeoShipCount()  # Implement this function
+            
+            return jsonify({
+                'ships': ships_data,
+                'total': total_ships
+            })
 
         app.run(debug=False, host='0.0.0.0', port=5000)
 

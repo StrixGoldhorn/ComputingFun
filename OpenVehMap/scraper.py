@@ -14,7 +14,7 @@ class ScraperMain:
                 coords = [aoi[1], aoi[2], aoi[3], aoi[4]]
                 print(f"Scanning VesselFinderScraper - AOI - {aoi[0]}")
                 classes.VesselFinderScraper.VesselFinderScraper.scanAndSaveAreaToDB(coords, 15)
-                time.sleep(120)
+                time.sleep(120 + random.randint(0,60))
             print("Sleeping VesselFinderScraper AOI scan for 600s")
             time.sleep(600)
 
@@ -26,8 +26,8 @@ class ScraperMain:
             for mmsi in mmsis:
                 print(f"Scanning VesselFinderScraper - MMSI - {mmsi[0]}")
                 classes.VesselFinderScraper.VesselFinderScraper.scanAndSaveShipToDB(mmsi[0])
-                time.sleep(60)
-            print("Sleeping VesselFinderScraper MMSI of Interest scan for 60s")
+                time.sleep(60 + random.randint(0,20))
+            print("Sleeping VesselFinderScraper MMSI of Interest scan for 120s")
             time.sleep(120)
             
     @staticmethod
@@ -39,7 +39,7 @@ class ScraperMain:
                 coords = [aoi[1], aoi[2], aoi[3], aoi[4]]
                 print(f"Scanning AISFriendsScraper - AOI - {aoi[0]}")
                 classes.AISFriendsScraper.AISFriendsScraper.scanAndSaveAreaToDB(coords, 15)
-                time.sleep(60)
+                time.sleep(60 + random.randint(0,20))
             print("Sleeping AISFriendsScraper AOI scan for 60s")
             time.sleep(60)
             
@@ -51,8 +51,8 @@ class ScraperMain:
             for mmsi in mmsis:
                 print(f"Scanning AISFriendsScraper - MMSI - {mmsi[0]}")
                 classes.AISFriendsScraper.AISFriendsScraper.scanAndSaveShipToDB(mmsi[0])
-                time.sleep(60)
-            print("Sleeping AISFriendsScraper MMSI of Interest scan for 60s")
+                time.sleep(60 + random.randint(0,20))
+            print("Sleeping AISFriendsScraper MMSI of Interest scan for 120s")
             time.sleep(120)
             
     @staticmethod
@@ -64,7 +64,7 @@ class ScraperMain:
                 coords = [aoi[1], aoi[2], aoi[3], aoi[4]]
                 print(f"Scanning MyShipTrackingScraper - AOI - {aoi[0]}")
                 classes.MyShipTrackingScraper.MyShipTrackingScraper.scanAndSaveAreaToDB(coords)
-                time.sleep(60)
+                time.sleep(60 + random.randint(0,60))
             print("Sleeping MyShipTrackingScraper AOI scan for 60s")
             time.sleep(60)
             

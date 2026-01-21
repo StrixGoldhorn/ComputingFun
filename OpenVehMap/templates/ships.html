@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Available Ships</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ships.css') }}">
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav class="nav-menu">
+        <a href="/" class="nav-item">Fleet View</a>
+        <a href="/ships" class="nav-item active">All Ships</a>
+        <a href="/alerts" class="nav-item">Alerts</a>
+    </nav>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="ship-icon">⚓</span>
+                <h1>All Available Ships</h1>
+            </div>
+        </header>
+
+        <div class="ships-table-container">
+            <div class="table-header">
+                <h2>Available Ships</h2>
+                <div class="table-actions">
+                    <button id="export-btn" class="action-btn">Export CSV</button>
+                    <span id="total-ships">Total: 0 ships</span>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="ships-table">
+                    <thead>
+                        <tr>
+                            <th>MMSI</th>
+                            <th>Name</th>
+                            <th>Country</th>
+                            <th>Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ships-tbody">
+                        <!-- Ships will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button id="prev-page" disabled>Previous</button>
+                <span id="page-info">Page 1 of 1</span>
+                <button id="next-page" disabled>Next</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Maritime Tracker • Data updated every 5 minutes • Last refresh: <span id="last-refresh">-</span></p>
+        </footer>
+
+        <div class="loading-overlay" id="loading">
+            <div class="spinner"></div>
+            <p>Loading ship data...</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ships.js') }}"></script>
+</body>
+</html>

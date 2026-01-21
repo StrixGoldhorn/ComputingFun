@@ -259,14 +259,12 @@ class ShipDBActions:
             curs.execute("SELECT shipName, mmsi, country, shipType FROM GeoShipInfo WHERE mmsi = ?", (mmsi, ))
             conn.commit()
             data = curs.fetchone()
-            print(data)
             output = {
                 "name": f"{data[0]}",
                 "mmsi": f"{data[1]}",
                 "country": f"{data[2]}",
                 "type": f"{data[3]}"
                 }
-            print(output)
             return output
         except Exception as e:
             print(f"ERROR - ShipDBActions - getInfoOfMMSI: {e}")
@@ -276,7 +274,7 @@ class ShipDBActions:
             conn.close()
 
     @staticmethod
-    def getShips24h() -> tuple:
+    def getShips24h() -> list:
         '''
         Returns most recent data for each ship captured in the past 24hrs
         '''
@@ -307,7 +305,7 @@ class ShipDBActions:
             conn.close()
             
     @staticmethod
-    def getShipsMoved24h(tolerance: float = 0.00005) -> tuple:
+    def getShipsMoved24h(tolerance: float = 0.00005) -> list:
         '''
         Returns mmsi, name, lat, long, timestamp of ship who moved more than specified tolerance in the past 24h
         Default tolerance approx 5.55m
@@ -335,6 +333,54 @@ class ShipDBActions:
         finally:
             curs.close()
             conn.close()
+
+    @staticmethod
+    def getNShipsWithOffestMxN(n: int, m: int) -> dict:
+        '''
+        Returns N ships with offset of M * N
+        eg N = 10, M = 2, will return ships with vehID 21 - 30 (inclusive) (1-indexed)
+        '''
+        conn = ShipDBActions.getDataDBConnection()
+        try:
+            curs = conn.cursor()
+            curs.execute("SELECT mmsi, shipName, country, shipType FROM GeoShipInfo LIMIT ? OFFSET ?;", (n, n*m))
+            conn.commit()
+            output = []
+            data = curs.fetchall()
+            for d in data:
+                output.append({
+                    "mmsi": f"{d[0]}",
+                    "name*": f"{d[1]}",
+                    "country": f"{d[2]}",
+                    "type": f"{d[3]}"
+                })
+            return output
+        except Exception as e:
+            print(f"ERROR - ShipDBActions - getNShipsWithOffestMxN: {e}")
+            AudtiDBActions.writeToAuditDB("error", "ShipDBActions - getNShipsWithOffestMxN", f"{e}")
+        finally:
+            curs.close()
+            conn.close()
+
+    @staticmethod
+    def getTotalGeoShipCount() -> list:
+        '''
+        Returns number of entries in GeoShipInfo
+        '''
+
+        conn = ShipDBActions.getDataDBConnection()
+        try:
+            curs = conn.cursor()
+            curs.execute("SELECT COUNT(*) FROM GeoShipInfo")
+            conn.commit()
+            return curs.fetchone()
+        except Exception as e:
+            print(f"ERROR - ShipDBActions - getTotalGeoShipCount: {e}")
+            AudtiDBActions.writeToAuditDB("error", "ShipDBActions - getTotalGeoShipCount", f"{e}")
+        finally:
+            curs.close()
+            conn.close()
+
 
 
 if __name__ == "__main__":

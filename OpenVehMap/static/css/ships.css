@@ -1,0 +1,143 @@
+.ships-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #ebf4ff;
+    border-bottom: 1px solid #bee3f8;
+}
+
+.table-header h2 {
+    font-size: 1.2rem;
+    color: #1a365d;
+}
+
+.table-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+#total-ships {
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.table-wrapper {
+    flex: 1;
+    overflow-y: visible; /* Changed to visible to allow page scrolling */
+}
+
+#ships-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+#ships-table th {
+    background: #3182ce;
+    color: white;
+    text-align: left;
+    padding: 0.7rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#ships-table td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#ships-table tr:hover {
+    background-color: #ebf8ff;
+}
+
+.ship-name {
+    font-weight: 600;
+    color: #2c5282;
+}
+
+.action-btn-cell {
+    text-align: center;
+}
+
+.view-history-btn {
+    background: #38a169;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.view-history-btn:hover {
+    background: #2c7a5d;
+    transform: translateY(-1px);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    gap: 1rem;
+}
+
+#page-info {
+    font-weight: 500;
+    color: #4a5568;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    color: #718096;
+    font-size: 0.85rem;
+    border-top: 1px solid #e2e8f0;
+    background: white;
+    margin-top: auto; /* Push footer to bottom */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-header {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: stretch;
+    }
+    
+    .table-actions {
+        justify-content: space-between;
+    }
+    
+    #ships-table {
+        font-size: 0.8rem;
+    }
+    
+    #ships-table th,
+    #ships-table td {
+        padding: 0.5rem;
+    }
+    
+    .view-history-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+}
