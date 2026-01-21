@@ -1,3 +1,4 @@
+// Thanks Qwen
 document.addEventListener('DOMContentLoaded', function() {
     const shipsTableBody = document.getElementById('ships-tbody');
     const searchBox = document.getElementById('search-box');

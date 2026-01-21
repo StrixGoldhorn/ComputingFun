@@ -36,10 +36,12 @@ class WebServer:
             ships = ShipDBActions.getShips24h()  # Your existing function
             return jsonify(ships)
         
+        # Thanks Qwen
         @app.route('/ships')
         def all_ships():
             return render_template('ships.html')
 
+        # Thanks Qwen
         @app.route('/api/ships/page/<int:offset>')
         def api_ships_page(offset):
             n = 20  # Number of ships per page (you can adjust this)
