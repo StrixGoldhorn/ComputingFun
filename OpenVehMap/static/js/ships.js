@@ -1,8 +1,7 @@
-// Thanks Qwen
+// Thanks QwenaddEventListener
 document.addEventListener('DOMContentLoaded', function() {
     const shipsTableBody = document.getElementById('ships-tbody');
     const searchBox = document.getElementById('search-box');
-    const searchBtn = document.getElementById('search-btn');
     const refreshBtn = document.getElementById('refresh-btn');
     const exportBtn = document.getElementById('export-btn');
     const prevPageBtn = document.getElementById('prev-page');
@@ -87,23 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Event Listeners
-    searchBtn.addEventListener('click', () => {
-        // No filtering - just clear the search box
-        searchBox.value = '';
-    });
-    
-    searchBox.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            // No filtering - just clear the search box
-            searchBox.value = '';
-        }
-    });
-    
-    refreshBtn.addEventListener('click', () => {
-        loadShips(currentPage);
-    });
-    
+    // Event Listeners    
     prevPageBtn.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;

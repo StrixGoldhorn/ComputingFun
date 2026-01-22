@@ -235,7 +235,7 @@ class ShipDBActions:
             output = []
             curs = conn.cursor()
             curs.execute("SELECT LocationLog.lat, LocationLog.long, LocationLog.timestamp FROM GeoShipInfo, LocationLog " \
-            "WHERE GeoShipInfo.vehID = LocationLog.vehID AND mmsi = ? ORDER BY LocationLog.timestamp", (mmsi, ))
+            "WHERE GeoShipInfo.vehID = LocationLog.vehID AND mmsi = ? GROUP BY LocationLog.timestamp ORDER BY LocationLog.timestamp DESC", (mmsi, ))
             conn.commit()
             data = curs.fetchall()
             for d in data:
