@@ -8,6 +8,8 @@ The rest of the code (backend) was done by yours truly.
 ## Description
 Designed to be a modular dashboard, where users can easily add info from **multiple data sources**, supplying location of various assets.
 
+![overview](./showcase_assets/overview.png)
+
 Currently, as a proof of concept, **3** data sources are being used.
 
 - [VesselFinder](https://www.vesselfinder.com/)
@@ -21,6 +23,8 @@ Users are able to add Area Of Interests (AOIs) to track geographical regions.
 ![homepage](./showcase_assets/homepage.png)
 
 ![mmsiofinterest](./showcase_assets/mmsiofinterest.png)
+
+![allships](./showcase_assets/allships.png)
 
 ## How to use
 `python -m main.py`
