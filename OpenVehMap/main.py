@@ -47,12 +47,11 @@ class WebServer:
             n = 20  # Number of ships per page (you can adjust this)
             m = offset // n  # Calculate page number
             
-            # Call your function: getNShipsWithOffestMxN(n, m)
-            ships_data = ShipDBActions.getNShipsWithOffestMxN(n, m)
+            # Get query term from query parameters
+            query = request.args.get('query', '').strip()
             
-            # You'll need to implement a function to get total count
-            # This might require another call to your database
-            total_ships = ShipDBActions.getTotalGeoShipCount()  # Implement this function
+            ships_data = ShipDBActions.getNShipsWithOffestMxNWithQuery(n, m, query)
+            total_ships = ShipDBActions.getTotalGeoShipCount()
             
             return jsonify({
                 'ships': ships_data,

@@ -20,6 +20,8 @@ Users are able to add vehicle IDs of interest to specifically track them.
 
 Users are able to add Area Of Interests (AOIs) to track geographical regions.
 
+Users are able to view all ships, and filter based on country, ship name, ship type, and MMSI
+
 ![homepage](./showcase_assets/homepage.png)
 
 ![mmsiofinterest](./showcase_assets/mmsiofinterest.png)

@@ -1,7 +1,8 @@
-// Thanks QwenaddEventListener
+// Thanks Qwen
 document.addEventListener('DOMContentLoaded', function() {
     const shipsTableBody = document.getElementById('ships-tbody');
     const searchBox = document.getElementById('search-box');
+    const searchBtn = document.getElementById('search-btn');
     const refreshBtn = document.getElementById('refresh-btn');
     const exportBtn = document.getElementById('export-btn');
     const prevPageBtn = document.getElementById('prev-page');
@@ -12,13 +13,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingOverlay = document.getElementById('loading');
     
     let currentPage = 1;
+    let currentQuery = '';
     const itemsPerPage = 20; // N parameter in your function
-    let allShips = []; // Store all ships for export
-    
-    async function fetchShips(offset = 0) {
+    let allShips = []; // Store all ships for export functionality
+
+    async function fetchShips(offset = 0, query = '') {
         try {
             loadingOverlay.classList.remove('hidden');
-            const response = await fetch(`/api/ships/page/${offset}`);
+            let url = `/api/ships/page/${offset}`;
+            if (query) {
+                url += `?query=${encodeURIComponent(query)}`;
+            }
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -33,9 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    async function loadShips(page = 1) {
+    async function loadShips(page = 1, query = '') {
         const offset = (page - 1) * itemsPerPage;
-        const result = await fetchShips(offset);
+        const result = await fetchShips(offset, query);
         
         const ships = result.ships || [];
         const totalShips = result.total || 0;
@@ -75,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td style="color: ${shipColor}; font-weight: bold;">${ship.mmsi}</td>
-                <td class="ship-name">${ship['name*'] || ship.name || 'Unknown'}</td>
+                <td class="ship-name">${ship['name'] || ship.name || 'Unknown'}</td>
                 <td>${ship.country || 'Unknown'}</td>
                 <td>${ship.type || 'Unknown'}</td>
                 <td class="action-btn-cell">
@@ -86,21 +92,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Event Listeners    
+    // Event Listeners
+    searchBtn.addEventListener('click', () => {
+        const query = searchBox.value.trim();
+        currentQuery = query;
+        loadShips(1, query); // Go back to page 1 when searching
+    });
+    
+    searchBox.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const query = searchBox.value.trim();
+            currentQuery = query;
+            loadShips(1, query); // Go back to page 1 when searching
+        }
+    });
+    
+    refreshBtn.addEventListener('click', () => {
+        loadShips(currentPage, currentQuery);
+    });
+    
     prevPageBtn.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
-            loadShips(currentPage);
+            loadShips(currentPage, currentQuery);
         }
     });
     
     nextPageBtn.addEventListener('click', () => {
         // Calculate total pages again to ensure we have the correct value
-        fetchShips(0).then(result => {
+        fetchShips(0, currentQuery).then(result => {
             const totalPages = Math.ceil(result.total / itemsPerPage);
             if (currentPage < totalPages) {
                 currentPage++;
-                loadShips(currentPage);
+                loadShips(currentPage, currentQuery);
             }
         });
     });
@@ -114,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const headers = ['MMSI', 'Name', 'Country', 'Type'];
         const rows = allShips.map(ship => [
             ship.mmsi,
-            ship['name*'] || ship.name || '',
+            ship['name'] || ship.name || '',
             ship.country || '',
             ship.type || ''
         ]);
@@ -136,5 +160,5 @@ document.addEventListener('DOMContentLoaded', function() {
     setupRefreshButton();
     
     // Initialize
-    loadShips(currentPage);
+    loadShips(currentPage, currentQuery);
 });
