@@ -5,6 +5,8 @@ from random import randint
 import json
 
 class MyShipTrackingScraper(geoShipSource):
+    DATASOURCE_ID = 2
+
     @staticmethod
     def addToDatasource():
         DataSourceDBActions.addDataSourceToDataSourceDB("MyShipTrackingScraper")
@@ -28,7 +30,7 @@ class MyShipTrackingScraper(geoShipSource):
                 # isSat = True if row[1] == "1" else False
                 
                 try:
-                    ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn)
+                    ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, MyShipTrackingScraper.DATASOURCE_ID)
                     # AudtiDBActions.writeToAuditDB("write", "MyShipTrackingScraper - scanAndSaveAreaToDB", f"Saved area to DB, Area: {coords_arr}")
                 except Exception as e:
                     print(f"ERROR - MyShipTrackingScraper - scanAndSaveAreaToDB, Unable to save to DB: {e}")

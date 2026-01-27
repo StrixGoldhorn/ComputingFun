@@ -7,6 +7,8 @@ import sqlite3
 import os
 
 class AISFriendsScraper(geoShipSource):
+    DATASOURCE_ID = 3
+    
     @staticmethod
     def addToDatasource():
         DataSourceDBActions.addDataSourceToDataSourceDB("AISFriendsScraper")
@@ -59,7 +61,7 @@ class AISFriendsScraper(geoShipSource):
                 vessel_id = vesseldata['vessel_id']
             
                 try:
-                    ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn)
+                    ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, AISFriendsScraper.DATASOURCE_ID)
                     AISFriendsScraper.addToOwnDB(mmsi, vessel_id)
                     # AudtiDBActions.writeToAuditDB("write", "AISFriendsScraper - scanAndSaveAreaToDB", f"Saved area to DB, Area: {coords_arr}")
                 except Exception as e:
@@ -130,7 +132,7 @@ class AISFriendsScraper(geoShipSource):
             vessel_id = vesseldata['vessel_id']
         
             try:
-                ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn)
+                ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, AISFriendsScraper.DATASOURCE_ID)
             except Exception as e:
                 print(f"ERROR - AISFriendsScraper - scanAndSaveShipToDB, Unable to save to DB: {e}")
                 AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - scanAndSaveShipToDB", f"Unable to save to DB, MMSI: {mmsi}")

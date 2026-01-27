@@ -5,6 +5,8 @@ from random import randint
 import json
 
 class VesselFinderScraper(geoShipSource):
+    DATASOURCE_ID = 1
+
     @staticmethod
     def addToDatasource():
         DataSourceDBActions.addDataSourceToDataSourceDB("VesselFinder")
@@ -202,7 +204,7 @@ class VesselFinderScraper(geoShipSource):
                     timestamp = moreinfo["ts"]
                     
                     try:
-                        ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn)
+                        ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, VesselFinderScraper.DATASOURCE_ID)
                         # AudtiDBActions.writeToAuditDB("write", "VesselFinderScraper - scanAndSaveAreaToDB", f"Saved area to DB, Area: {coords_arr}")
                     except Exception as e:
                         print(f"ERROR - VesselFinderScraper - scanAndSaveAreaToDB, Unable to save to DB: {e}")
@@ -231,7 +233,7 @@ class VesselFinderScraper(geoShipSource):
         timestamp = moreinfo["ts"]
         
         try:
-            ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn)
+            ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, VesselFinderScraper.DATASOURCE_ID)
             # AudtiDBActions.writeToAuditDB("write", "VesselFinderScraper - scanAndSaveShipToDB", f"Saved ship to DB, MMSI: {mmsi}")
         except:
             AudtiDBActions.writeToAuditDB("error", "VesselFinderScraper - scanAndSaveShipToDB", f"Unable to save to DB, MMSI: {mmsi}")

@@ -160,7 +160,8 @@ class ShipDBActions:
     @staticmethod
     def addGeoShipLog(lat: float, long: float, timestamp: int,
                       mmsi: int, shipname: str, country: str, shiptype:str,
-                      speed: float, course: float, trueHeading: float, rateOfTurn: float):
+                      speed: float, course: float, trueHeading: float, rateOfTurn: float,
+                      sourceID: int):
         try:
             dataconn = ShipDBActions.getDataDBConnection()
             datacurs = dataconn.cursor()
@@ -173,7 +174,7 @@ class ShipDBActions:
             vehid = datacurs.fetchone()[0]
 
             datacurs.execute("INSERT INTO LocationLog (lat, long, timestamp, vehID, sourceID) " \
-            "VALUES (?, ?, ?, ?, ?)", (lat, long, timestamp, vehid, -1))
+            "VALUES (?, ?, ?, ?, ?)", (lat, long, timestamp, vehid, sourceID))
 
             datacurs.execute("INSERT INTO ShipStatusLog (locationLogID, speed, course, trueHeading, rateOfTurn) " \
             "VALUES (?, ?, ?, ?, ?)", (datacurs.lastrowid, speed, course, trueHeading, rateOfTurn))
@@ -334,6 +335,7 @@ class ShipDBActions:
             curs.close()
             conn.close()
 
+    # UNUSED! Check logic again before implementing
     @staticmethod
     def getNShipsWithOffestMxN(n: int, m: int) -> dict:
         '''
@@ -350,7 +352,7 @@ class ShipDBActions:
             for d in data:
                 output.append({
                     "mmsi": f"{d[0]}",
-                    "name*": f"{d[1]}",
+                    "name": f"{d[1]}",
                     "country": f"{d[2]}",
                     "type": f"{d[3]}"
                 })
@@ -358,6 +360,41 @@ class ShipDBActions:
         except Exception as e:
             print(f"ERROR - ShipDBActions - getNShipsWithOffestMxN: {e}")
             AudtiDBActions.writeToAuditDB("error", "ShipDBActions - getNShipsWithOffestMxN", f"{e}")
+        finally:
+            curs.close()
+            conn.close()
+
+    @staticmethod
+    def getNShipsWithOffestMxNWithQuery(n: int, m: int, query: str) -> dict:
+        '''
+        Returns N ships with offset of M * N, filtered based on query.
+        eg N = 10, M = 2, will return ships 21 - 30 (inclusive) (1-indexed) in the result
+        '''
+        conn = ShipDBActions.getDataDBConnection()
+        try:
+            curs = conn.cursor()
+            # TODO check for sqli
+            search = f"%{query}%"
+            curs.execute("SELECT mmsi, shipName, country, shipType FROM GeoShipInfo \
+                         WHERE mmsi LIKE ? \
+                         OR shipName LIKE ? \
+                         OR shipType LIKE ? \
+                         OR country LIKE ? \
+                         LIMIT ? OFFSET ?;", (search, search, search, search, n, n*m))
+            conn.commit()
+            output = []
+            data = curs.fetchall()
+            for d in data:
+                output.append({
+                    "mmsi": f"{d[0]}",
+                    "name": f"{d[1]}",
+                    "country": f"{d[2]}",
+                    "type": f"{d[3]}"
+                })
+            return output
+        except Exception as e:
+            print(f"ERROR - ShipDBActions - getNShipsWithOffestMxNWithQuery: {e}")
+            AudtiDBActions.writeToAuditDB("error", "ShipDBActions - getNShipsWithOffestMxNWithQuery", f"{e}")
         finally:
             curs.close()
             conn.close()

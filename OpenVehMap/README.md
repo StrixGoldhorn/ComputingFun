@@ -37,9 +37,12 @@ Add AOIs to the AOI db, the site will scan them regularly.
 
 ## To add sources
 To add sources for maritime traffic, make them a subclass of `geoShipSource` and ensure they override the following abstract functions
+You MUST change the `DATASOURCE_ID` and add it to `datasource.db`.
 
 ```py
-class geoShipSource(ABC):
+class geoShipSource(ABC):    
+    DATASOURCE_ID = -1
+
     @staticmethod
     @abstractmethod
     def addToDatasource():
