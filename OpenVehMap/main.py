@@ -13,10 +13,19 @@ class WebServer:
         def history_mmsi(mmsi):
             return render_template('history.html', mmsi=mmsi)
         
+        @app.route('/recent/<int:mmsi>')
+        def recent_mmsi(mmsi):
+            return render_template('recent.html', mmsi=mmsi)
+        
         # Thanks Qwen
         @app.route('/api/history/<mmsi>')
         def api_history(mmsi):
             data = ShipDBActions.getHistoryOfMMSI(mmsi)
+            return jsonify(data)
+        
+        @app.route('/api/recent/<mmsi>')
+        def api_recent(mmsi):
+            data = ShipDBActions.get24HHistoryOfMMSI(mmsi)
             return jsonify(data)
         
         # Thanks Qwen

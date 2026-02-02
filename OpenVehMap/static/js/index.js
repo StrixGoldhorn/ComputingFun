@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Last Update: ${formatTimestamp(ship.timestamp)}<br>
                     Speed: ${ship.speed ? ship.speed.toFixed(1) : 'N/A'} knots<br>
                     Course: ${ship.course ? ship.course.toFixed(0) : 'N/A'}°<br>
-                    <a href="/history/${ship.mmsi}" style="
+                    <a href="/recent/${ship.mmsi}" style="
                         display: inline-block;
                         margin-top: 8px; 
                         padding: 4px 8px; 
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${ship.speed ? ship.speed.toFixed(1) : 'N/A'}</td>
                 <td>${ship.course ? ship.course.toFixed(0) : 'N/A'}°</td>
                 <td>
-                    <a href="/history/${ship.mmsi}" class="action-link">History</a>
+                    <a href="/recent/${ship.mmsi}" class="action-link">History</a>
                 </td>
             `;
             shipsTableBody.appendChild(row);
