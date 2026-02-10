@@ -173,11 +173,18 @@ class ShipDBActions:
 
             vehid = datacurs.fetchone()[0]
 
-            datacurs.execute("INSERT INTO LocationLog (lat, long, timestamp, vehID, sourceID) " \
-            "VALUES (?, ?, ?, ?, ?)", (lat, long, timestamp, vehid, sourceID))
+            # CHECK IF ALREADY EXISTS
+            datacurs.execute("SELECT timestamp, vehID, sourceID FROM LocationLog " \
+            "WHERE lat = ? AND long = ? AND timestamp = ? AND vehID = ? AND sourceID = ?", (lat, long, timestamp, vehid, sourceID))
+            if datacurs.fetchone():
+                pass
+            else:
 
-            datacurs.execute("INSERT INTO ShipStatusLog (locationLogID, speed, course, trueHeading, rateOfTurn) " \
-            "VALUES (?, ?, ?, ?, ?)", (datacurs.lastrowid, speed, course, trueHeading, rateOfTurn))
+                datacurs.execute("INSERT INTO LocationLog (lat, long, timestamp, vehID, sourceID) " \
+                "VALUES (?, ?, ?, ?, ?)", (lat, long, timestamp, vehid, sourceID))
+
+                datacurs.execute("INSERT INTO ShipStatusLog (locationLogID, speed, course, trueHeading, rateOfTurn) " \
+                "VALUES (?, ?, ?, ?, ?)", (datacurs.lastrowid, speed, course, trueHeading, rateOfTurn))
 
             dataconn.commit()
             datacurs.close()
@@ -237,6 +244,30 @@ class ShipDBActions:
             curs = conn.cursor()
             curs.execute("SELECT LocationLog.lat, LocationLog.long, LocationLog.timestamp FROM GeoShipInfo, LocationLog " \
             "WHERE GeoShipInfo.vehID = LocationLog.vehID AND mmsi = ? GROUP BY LocationLog.timestamp ORDER BY LocationLog.timestamp DESC", (mmsi, ))
+            conn.commit()
+            data = curs.fetchall()
+            for d in data:
+                output.append({"lat": d[0], "lng": d[1], "timestamp": d[2]})
+            return output
+        except Exception as e:
+            print(f"ERROR - ShipDBActions - getHistoryOfMMSI: {e}")
+            AudtiDBActions.writeToAuditDB("error", "ShipDBActions - getHistoryOfMMSI", f"{e}")
+        finally:
+            curs.close()
+            conn.close()
+
+    @staticmethod
+    def get24HHistoryOfMMSI(mmsi: int) -> list:
+        '''
+        Returns history of mmsi for the past 24 hrs
+        '''
+        conn = ShipDBActions.getDataDBConnection()
+        try:
+            output = []
+            curs = conn.cursor()
+            curs.execute("SELECT LocationLog.lat, LocationLog.long, LocationLog.timestamp FROM GeoShipInfo, LocationLog " \
+            "WHERE GeoShipInfo.vehID = LocationLog.vehID AND mmsi = ? AND LocationLog.timestamp >= strftime('%s', 'now') - 86400 " \
+            "GROUP BY LocationLog.timestamp ORDER BY LocationLog.timestamp DESC", (mmsi, ))
             conn.commit()
             data = curs.fetchall()
             for d in data:
