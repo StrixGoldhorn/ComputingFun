@@ -15,6 +15,7 @@ class AISFriendsScraper(geoShipSource):
 
     @staticmethod
     def scanAndSaveAreaToDB(coords_arr: list, zoomLevel: int = 15):
+        INCLUDE_RATE_OF_TURN = False
         latmin = coords_arr[0]
         latmax = coords_arr[1]
         longmin = coords_arr[2]
@@ -43,31 +44,54 @@ class AISFriendsScraper(geoShipSource):
                 # keys = ['id', 'vessel_id', 'class', 'imo', 'mmsi', 'name', 'name_ais', 'ship_type_id', 'detailed_type_id', 'timestamp_of_position',
                 # 'length', 'beam', 'to_bow', 'to_stern', 'to_port', 'to_starboard', 'true_heading', 'course_over_ground', 'speed_over_ground', 'draught',
                 # 'navigational_status_id', 'flag', 'latitude', 'longitude', 'lat_grid', 'lon_grid']
-                
-                vesseldata = AISFriendsScraper.getShipInfo(vessel['vessel_id'])
-                
-                lat = vesseldata['latitude']    
-                long = vesseldata['longitude']
-                timestamp = vesseldata['timestamp_of_position']
-                mmsi = vesseldata['mmsi']
-                shipname = vesseldata['name_ais']
-                country = vesseldata['flag']
-                shiptype = vesseldata['type']
-                speed = vesseldata['speed_over_ground']
-                course = vesseldata['course_over_ground']
-                trueheading = vesseldata['true_heading']
-                rateofturn = vesseldata['rate_of_turn']
-            
-                vessel_id = vesseldata['vessel_id']
-            
-                try:
-                    ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, AISFriendsScraper.DATASOURCE_ID)
-                    AISFriendsScraper.addToOwnDB(mmsi, vessel_id)
-                    # AudtiDBActions.writeToAuditDB("write", "AISFriendsScraper - scanAndSaveAreaToDB", f"Saved area to DB, Area: {coords_arr}")
-                except Exception as e:
-                    print(f"ERROR - AISFriendsScraper - scanAndSaveAreaToDB, Unable to save to DB: {e}")
-                    AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - scanAndSaveAreaToDB", f"Unable to save to DB, Area: {coords_arr}")
 
+                if INCLUDE_RATE_OF_TURN and AISFriendsScraper.checkIfExists(vessel['vessel_id']):
+                    vesseldata = AISFriendsScraper.getShipInfo(vessel['vessel_id'])
+                    
+                    lat = vesseldata['latitude']
+                    long = vesseldata['longitude']
+                    timestamp = vesseldata['timestamp_of_position']
+                    mmsi = vesseldata['mmsi']
+                    shipname = vesseldata['name_ais']
+                    country = vesseldata['flag']
+                    shiptype = vesseldata['type']
+                    speed = vesseldata['speed_over_ground']
+                    course = vesseldata['course_over_ground']
+                    trueheading = vesseldata['true_heading']
+                    rateofturn = vesseldata['rate_of_turn']
+                    vessel_id = vesseldata['vessel_id']
+
+                    try:
+                        ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, AISFriendsScraper.DATASOURCE_ID)
+                        # AudtiDBActions.writeToAuditDB("write", "AISFriendsScraper - scanAndSaveAreaToDB", f"Saved area to DB, Area: {coords_arr}")
+                    except Exception as e:
+                        print(f"ERROR - AISFriendsScraper - scanAndSaveAreaToDB, Unable to save to DB: {e}")
+                        AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - scanAndSaveAreaToDB", f"Unable to save to DB, Area: {coords_arr}")
+
+                else:
+                    lat = vessel['latitude']
+                    long = vessel['longitude'] 
+                    timestamp = vessel['timestamp_of_position']
+                    mmsi = vessel['mmsi']
+                    shipname = vessel['name_ais']
+                    country = vessel['flag']
+                    shiptype = None
+                    speed = vessel['speed_over_ground']
+                    course = vessel['course_over_ground']
+                    trueheading = vessel['true_heading']
+                    rateofturn = None
+                    vessel_id = vessel['vessel_id']
+            
+                    if shipname is not None:
+                        try:
+                            ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, AISFriendsScraper.DATASOURCE_ID)
+                            AISFriendsScraper.addToOwnDB(mmsi, vessel_id)
+                            # AudtiDBActions.writeToAuditDB("write", "AISFriendsScraper - scanAndSaveAreaToDB", f"Saved area to DB, Area: {coords_arr}")
+                        except Exception as e:
+                            print(f"ERROR - AISFriendsScraper - scanAndSaveAreaToDB, Unable to save to DB: {e}")
+                            AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - scanAndSaveAreaToDB", f"Unable to save to DB, Area: {coords_arr}")
+                    else:
+                        pass
             
         except Exception as e:
             print(f"ERROR - AISFriendsScraper - scanAndSaveAreaToDB, Scan failed: {e}")
@@ -199,6 +223,33 @@ class AISFriendsScraper(geoShipSource):
         except Exception as e:
             print(f"ERROR - AISFriendsScraper - addToOwnDB: {e}")
             AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - addToOwnDB", f"{e}")
+
+        finally:
+            conn.close()
+
+    @staticmethod
+    def checkIfExists(vessel_id: int):
+        output = False 
+        try:
+            conn = AISFriendsScraper.getAISFriendsDBConnection()
+            curs = conn.cursor()
+
+            curs.execute("SELECT vessel_id FROM shipdata " \
+            "WHERE vessel_id = ?", (vessel_id))
+            if curs.fetchone():
+                output = True
+            else:
+                output = False
+
+            conn.commit()
+            curs.close()
+            conn.close()
+
+            return output
+        
+        except Exception as e:
+            print(f"ERROR - AISFriendsScraper - checkIfExists: {e}")
+            AudtiDBActions.writeToAuditDB("error", "AISFriendsScraper - checkIfExists", f"{e}")
 
         finally:
             conn.close()
