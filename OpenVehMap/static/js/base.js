@@ -10,7 +10,7 @@ function formatTimestamp(epochSeconds) {
 function createShipIcon(course = 0, size = 20, shiptype = 'aaa') {
     if (shiptype == "Tug") {
         color = "#16b22eff";
-    } else if (shiptype == "Military" || shiptype == "SAR") {
+    } else if (shiptype == "Military" || shiptype == "SAR" || (shiptype != null && shiptype.includes("Law"))) {
         color = "#eb2525ff";
     } else {
         color = "#2563eb";
