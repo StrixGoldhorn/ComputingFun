@@ -89,6 +89,7 @@ class VesselFinderScraper(geoShipSource):
     
     @staticmethod
     def scanAndSaveAreaToDB(coords_arr: list, zoomLevel: int, shipfilter: str = None, display: bool = True) -> None:
+        LOWER_REQUESTS = True
 
         # Helper class
         def processResponseTerrestrial(data: bytes, zoomLevel: int) -> list[dict]:
@@ -169,7 +170,6 @@ class VesselFinderScraper(geoShipSource):
                 
             return OUTPUT_shipdata
 
-
         try:
             randint1 = randint(100, 999)
             randint2 = randint(100, 300)
@@ -194,14 +194,24 @@ class VesselFinderScraper(geoShipSource):
                     lat = vessel["Latitude"]
                     long = vessel["Longitude"]
 
-                    moreinfo = VesselFinderScraper.getVesselInfoResponse(mmsi)
-                    country = moreinfo["country"]
-                    shiptype = moreinfo["type"]
-                    speed = moreinfo["ss"]
-                    course = moreinfo["cu"]
-                    trueheading = None
-                    rateofturn = None
-                    timestamp = moreinfo["ts"]
+                    if LOWER_REQUESTS:
+                        country = None
+                        shiptype = None
+                        speed = None
+                        course = None
+                        trueheading = None
+                        rateofturn = None
+                        timestamp = None
+                        
+                    else:
+                        moreinfo = VesselFinderScraper.getVesselInfoResponse(mmsi)
+                        country = moreinfo["country"]
+                        shiptype = moreinfo["type"]
+                        speed = moreinfo["ss"]
+                        course = moreinfo["cu"]
+                        trueheading = None
+                        rateofturn = None
+                        timestamp = moreinfo["ts"]
                     
                     try:
                         ShipDBActions.addGeoShipLog(lat, long, timestamp, mmsi, shipname, country, shiptype, speed, course, trueheading, rateofturn, VesselFinderScraper.DATASOURCE_ID)
