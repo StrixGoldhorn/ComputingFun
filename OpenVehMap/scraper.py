@@ -7,6 +7,7 @@ import random
 class ScraperMain:
     @staticmethod
     def VesselFinderScrapeAllAois():
+        SLEEP_TIME = 600
         while True:
             aois = AoiDBActions.getAllAoi()
             random.shuffle(aois)
@@ -15,23 +16,25 @@ class ScraperMain:
                 print(f"Scanning VesselFinderScraper - AOI - {aoi[0]}")
                 classes.VesselFinderScraper.VesselFinderScraper.scanAndSaveAreaToDB(coords, 15)
                 time.sleep(120 + random.randint(0,60))
-            print("Sleeping VesselFinderScraper AOI scan for 600s")
-            time.sleep(600)
+            print(f"Sleeping VesselFinderScraper AOI scan for {SLEEP_TIME}s")
+            time.sleep(SLEEP_TIME)
 
     @staticmethod
     def VesselFinderScrapeAllMMSI():
+        SLEEP_TIME = 300
         while True:
             mmsis = ShipDBActions.getAllmmsiOfInterest()
             random.shuffle(mmsis)
             for mmsi in mmsis:
                 print(f"Scanning VesselFinderScraper - MMSI - {mmsi[0]}")
                 classes.VesselFinderScraper.VesselFinderScraper.scanAndSaveShipToDB(mmsi[0])
-                time.sleep(60 + random.randint(0,20))
-            print("Sleeping VesselFinderScraper MMSI of Interest scan for 120s")
-            time.sleep(120)
+                time.sleep(180 + random.randint(0,20))
+            print(f"Sleeping VesselFinderScraper MMSI of Interest scan for {SLEEP_TIME}s")
+            time.sleep(SLEEP_TIME)
             
     @staticmethod
     def AISFriendsScrapeAllAois():
+        SLEEP_TIME = 60
         while True:
             aois = AoiDBActions.getAllAoi()
             random.shuffle(aois)
@@ -39,24 +42,26 @@ class ScraperMain:
                 coords = [aoi[1], aoi[2], aoi[3], aoi[4]]
                 print(f"Scanning AISFriendsScraper - AOI - {aoi[0]}")
                 classes.AISFriendsScraper.AISFriendsScraper.scanAndSaveAreaToDB(coords, 15)
-                time.sleep(60 + random.randint(0,20))
-            print("Sleeping AISFriendsScraper AOI scan for 60s")
-            time.sleep(60)
+                time.sleep(0 + random.randint(0,20))
+            print(f"Sleeping AISFriendsScraper AOI scan for {SLEEP_TIME}s")
+            time.sleep(SLEEP_TIME)
             
     @staticmethod
     def AISFriendsScrapeAllMMSI():
+        SLEEP_TIME = 120
         while True:
             mmsis = ShipDBActions.getAllmmsiOfInterest()
             random.shuffle(mmsis)
             for mmsi in mmsis:
                 print(f"Scanning AISFriendsScraper - MMSI - {mmsi[0]}")
                 classes.AISFriendsScraper.AISFriendsScraper.scanAndSaveShipToDB(mmsi[0])
-                time.sleep(60 + random.randint(0,20))
-            print("Sleeping AISFriendsScraper MMSI of Interest scan for 120s")
-            time.sleep(120)
+                time.sleep(10 + random.randint(0,20))
+            print(f"Sleeping AISFriendsScraper MMSI of Interest scan for {SLEEP_TIME}s")
+            time.sleep(SLEEP_TIME)
             
     @staticmethod
     def MyShipTrackingScrapeAllAois():
+        SLEEP_TIME = 60
         while True:
             aois = AoiDBActions.getAllAoi()
             random.shuffle(aois)
@@ -64,9 +69,9 @@ class ScraperMain:
                 coords = [aoi[1], aoi[2], aoi[3], aoi[4]]
                 print(f"Scanning MyShipTrackingScraper - AOI - {aoi[0]}")
                 classes.MyShipTrackingScraper.MyShipTrackingScraper.scanAndSaveAreaToDB(coords)
-                time.sleep(60 + random.randint(0,60))
-            print("Sleeping MyShipTrackingScraper AOI scan for 60s")
-            time.sleep(60)
+                time.sleep(0 + random.randint(0,30))
+            print(f"Sleeping MyShipTrackingScraper AOI scan for {SLEEP_TIME}s")
+            time.sleep(SLEEP_TIME)
             
             
 
@@ -77,7 +82,7 @@ class ScraperMain:
 
         VFAoiThread = threading.Thread(target=ScraperMain.VesselFinderScrapeAllAois)
         VFmmsiThread = threading.Thread(target=ScraperMain.VesselFinderScrapeAllMMSI)
-        threads.append(VFAoiThread)
+        # threads.append(VFAoiThread)
         # threads.append(VFmmsiThread)
         
         classes.AISFriendsScraper.AISFriendsScraper.initOwnDB()
