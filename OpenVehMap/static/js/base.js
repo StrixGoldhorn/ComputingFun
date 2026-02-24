@@ -7,11 +7,13 @@ function formatTimestamp(epochSeconds) {
 }
 
 // Create simple ship icon with 5-sided shape
-function createShipIcon(course = 0, size = 20, shiptype = 'aaa') {
+function createShipIcon(course = 0, size = 20, shiptype = 'aaa', shipname = 'aaa') {
     if (shiptype == "Tug") {
         color = "#16b22eff";
     } else if (shiptype == "Military" || shiptype == "SAR" || (shiptype != null && shiptype.includes("Law"))) {
         color = "#eb2525ff";
+    } else if (shipname != null && shipname.includes("MPA")) {
+        color = "#f4b507";
     } else {
         color = "#2563eb";
     }

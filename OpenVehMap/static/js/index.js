@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
         filteredShips.forEach(ship => {
             if (ship.lat && ship.lng) {
                 const marker = L.marker([ship.lat, ship.lng], {
-                    icon: createShipIcon(ship.course || 0, 18, ship.shiptype)
+                    icon: createShipIcon(ship.course || 0, 18, ship.shiptype, ship.name)
                 });
                 
                 const popupContent = `
