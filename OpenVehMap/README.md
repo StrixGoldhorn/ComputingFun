@@ -66,3 +66,17 @@ Also add a function to run your scraper in `scraper.py`
 Below is the DB structure
 
 ![dbstructure](./showcase_assets/dbstructure.png)
+
+## Additional Tools
+
+To facilitate the analysis of data, there are currently 2 scripts to export data to a `.geojson` file.
+
+[`TOOLS_aoi_db_to_geojson.py`](TOOLS_aoi_db_to_geojson.py): Exports the AOIs as polygons.
+
+[`TOOLS_location_db_to_geojson.py`](TOOLS_location_db_to_geojson.py): Exports the LocationLogs of ships as polygons. By default, exports ships pinged in the last 24 hours.
+
+To use these scripts, run `python .\TOOLS_aoi_db_to_geojson.py` or `python TOOLS_location_db_to_geojson.py` in the console.
+
+Below is an example of the results when imported into a GIS application.
+
+![map_example](./showcase_assets/map_example.jpg)
