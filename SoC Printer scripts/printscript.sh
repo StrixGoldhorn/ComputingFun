@@ -91,7 +91,7 @@ echo "Filename:  \e[40m\e[1;33m${FILENAME}\e[0m";
 echo "--------------------------------------------------";
 
 echo "Generated command:"
-echo "\e[40m\e[0;32msmbclient -U nusstu/${NUSNET_ID} //nts27.comp.nus.edu.sg/${PRINTER} -c \"print ${FILENAME}\"\e[0m";
+echo "\e[40m\e[0;32msmbclient -U nusstu/${NUSNET_ID} //nts27b.res.nus.edu.sg/${PRINTER} -c \"print ${FILENAME}\"\e[0m";
 
 
 # Get user confirmation
@@ -99,7 +99,7 @@ read -p "Confirm above command? [Y/n]: " yn
 case $yn in 
   [Yy] )
     echo "Sending command, handing over to smbclient";
-    smbclient -U nusstu/${NUSNET_ID} //nts27.comp.nus.edu.sg/${PRINTER} -c "print ${FILENAME}";;
+    smbclient -U nusstu/${NUSNET_ID} //nts27b.res.nus.edu.sg/${PRINTER} -c "print ${FILENAME}";;
 
   [Nn] )
     echo "Cancelled operation, exiting.";
