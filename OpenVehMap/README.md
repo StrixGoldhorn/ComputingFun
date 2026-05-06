@@ -10,11 +10,12 @@ Designed to be a modular dashboard, where users can easily add info from **multi
 
 ![overview](./showcase_assets/overview.png)
 
-Currently, as a proof of concept, **3** data sources are being used.
+Currently, as a proof of concept, **3** + 1 data sources are being used.
 
 - [VesselFinder](https://www.vesselfinder.com/)
 - [AISFriends](https://www.aisfriends.com/)
 - [MyShipTracking](https://www.myshiptracking.com/)
+- Your own AIS Station! (As long as it provides NMEA messages)
 
 Users are able to add vehicle IDs of interest to specifically track them.
 
@@ -60,6 +61,22 @@ class geoShipSource(ABC):
 ```
 
 Also add a function to run your scraper in `scraper.py`
+
+## Regarding ownself AIS stations
+
+If you are able to receive AIS messages, you can use them as input for the system.
+
+For the POC implementation, details are as follows.
+
+- Receiver used was an RTL-SDR with a monopole antenna.
+
+- To capture AIS data, [AIS Catcher](https://github.com/jvde-github/AIS-catcher) was used.
+
+- Received data was streamed into a UDP server on port 10110
+
+- To integrate the data into this system, a listener was set up on port 10110, and thereafter [pyais](https://pypi.org/project/pyais/) was used to convert NMEA messages into a Python dict with the relevant info.
+
+- From there, data can be saved into the database as per usual.
 
 ## To edit more stuff
 
